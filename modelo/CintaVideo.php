@@ -1,5 +1,5 @@
 <?php
-    require_once "Soporte.php"
+    require_once "Soporte.php";
 class CintaVideo extends Soporte{
     private int $duracion;
 
@@ -13,7 +13,7 @@ class CintaVideo extends Soporte{
     }
 
      public function muestraResumen():string{
-        return "Titulo: ".$titulo." con precio: ".$precio." el precio total es de: "-$precioConIVA." con una duración de: ".$duracion;
+        return parent::muestraResumen() ." Titulo: ".$this->getTitulo()." con precio: ".$this->getPrecio()." el precio total es de: ".$this->getPrecioConIVA()." con una duración de: ".$this->getDuracion();
     }
 
 }
