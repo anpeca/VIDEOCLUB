@@ -4,6 +4,7 @@ class Soporte {
     private string $titulo;
     private float $precio;
     private float $precioConIVA;
+    private int $numero;
     private const IVA = 21;
 
     public function __construct(string $titulo, float $precio, float $precioConIVA) {
@@ -22,6 +23,10 @@ class Soporte {
 
     public function getPrecioConIVA(): float {
         return $this->precioConIVA;
+    }
+
+    public function getNumero(): int {
+        return $this->numero;
     }
 
     public function getIVA(): float {
