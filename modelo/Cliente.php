@@ -67,25 +67,32 @@ class Cliente {
 
  
     public function devolver(Soporte $s):bool{
-        if($this->soportesAlquilados($s)){
+
+        if($this->soportesAlquilados[$s]){
+
            unset( $this->soportesAlquilados[$s]);
            $this->numSoportesAlquilados--;
-            echo "Devolviendo el Soporte"
-            return true
-        }else if($this->getNumSoportesAlquilados==0){
-            echo "No hay soportes que devolver"
-            return false
+            echo "Devolviendo el Soporte";
+
+            return true;
+
+        }else if($this->getNumSoportesAlquilados() == 0){
+            echo "No hay soportes que devolver";
+            return false;
+
         }else{
-            echo "Hubo un error en la devolucion del soporte"
-            return false
+            echo "Hubo un error en la devolucion del soporte";
+            return false;
         }
     }
 
 
     public function listaAlquileres(){
-        echo "Hay ".$this->getNumSoportesAlquilados" Soportes alquilados";
 
-        for($i=0; $i<sizeof($soportesAlquilados);$i++){
+        echo "Hay ".$this->getNumSoportesAlquilados(). " Soportes alquilados:";
+
+        for($i = 0; $i < sizeof($this -> soportesAlquilados); $i++){
+
             echo $this->soportesAlquilados[$i]."\n";
         }
     }
