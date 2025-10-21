@@ -1,6 +1,6 @@
 <?php
 
-    include "Soporte.php";
+    include "../modelo/Soporte.php";
 
     $soporte1 = new Soporte("Tenet", 22, 3, 12); 
     echo "<strong>" . $soporte1->getTitulo() . "</strong>"; 
@@ -11,7 +11,7 @@
 ?>
 
 <?php
-include "CintaVideo.php";
+include "../modelo/CintaVideo.php";
 
 $miCinta = new CintaVideo("Los cazafantasmas", 23, 3.5, 107); 
 echo "<strong>" . $miCinta->getTitulo() . "</strong>"; 
@@ -22,7 +22,7 @@ $miCinta->muestraResumen();
 ?>
 
 <?php
-include "Dvd.php";
+include "../modelo/Dvd.php";
 
 $miDvd = new Dvd("Origen", 24, 15, "es,en,fr", "16:9"); 
 echo "<strong>" . $miDvd->getTitulo() . "</strong>"; 
@@ -32,7 +32,7 @@ $miDvd->muestraResumen();
 ?>
 
 <?php
-include "Juego.php";
+include "../modelo/Juego.php";
 
 $miJuego = new Juego("The Last of Us Part II", 26, 49.99, "PS4", 1, 1); 
 echo "<strong>" . $miJuego->getTitulo() . "</strong>"; 
