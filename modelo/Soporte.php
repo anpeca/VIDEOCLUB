@@ -4,7 +4,7 @@ class Soporte
     public string $titulo;
     protected int $numero;
     private float $precio;
-    private const float IVA = 21.0;
+    private const  IVA = 21.0;
 
     public function __construct(string $titulo, int $numero, float $precio)
     {
