@@ -5,11 +5,7 @@ Los métodos públicos de incluir algún soporte, crearán la clase y llamarán 
 <?php
 require_once "Soporte.php";
 require_once "Cliente.php";
-require_once "CintaVideo.php";
-require_once "Dvd.php";
-require_once "Juego.php";
-class Videoclub {
-
+class Videoclub 
     private string $nombre;
     private array $productos = [];
     private int $numProductos;
@@ -51,47 +47,5 @@ class Videoclub {
         $this->socios[] = $c;
         $this->numSocios++;
     }
-
-    public function incluirCintaVideo(string $titulo, float $precio, int $duracion): void{
-        $cintaVideo= new CintaVideo($titulo,$this->numProductos + 1,
-        $precio, $duracion);
-        $this->incluirProducto($cintaVideo);
-    }
-
-    public function incluirDvd(string $titulo, float $precio, string $idiomas, string $pantalla):void{
-        $dvd=new Dvd($titulo, $this->numProductos + 1,$precio,$idiomas,$pantalla);
-        $this->incluirProducto($dvd);
-    }
-
-     public function incluirJuego(string $titulo, float $precio, string $consola, int $minJ, int $maxJ): void{
-        $juego = new Juego($titulo, $this->numProductos + 1, $precio, $consola, $minJ, $maxJ);
-        $this->incluirProducto($juego);
-    }
-
-    public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): bool{
-        $socioEncontrado= null;
-        foreach($this->socios as $socio){
-            if($socio->getNumero()=== $numeroCliente){
-                $socioEncontrado=$socio;
-                break;
-            }
-        }
-
-         $productoEncontrado = null;
-          foreach ($this->productos as $producto) {
-             if ($producto->getNumero() === $numeroSoporte) {
-            $productoEncontrado = $producto;
-            break;
-            }
-    }
-
-     if ($socioEncontrado && $productoEncontrado) {
-        return $socioEncontrado->alquilar($productoEncontrado);
-    }
-
-    return false;
-
-    }
-
 }
 ?>
