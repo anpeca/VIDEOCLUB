@@ -2,10 +2,11 @@
 
     include "Soporte.php";
 
-    $soporte1 = new Soporte("Tenet", 22, 3); 
+    $soporte1 = new Soporte("Tenet", 22, 3, 12); 
     echo "<strong>" . $soporte1->getTitulo() . "</strong>"; 
     echo "<br>Precio: " . $soporte1->getPrecio() . " euros"; 
     echo "<br>Precio IVA incluido: " . $soporte1->getPrecioConIVA() . " euros";
+    echo "<br>Número de soporte: " . $soporte1->getNumero() . 
     $soporte1->muestraResumen();
 ?>
 
