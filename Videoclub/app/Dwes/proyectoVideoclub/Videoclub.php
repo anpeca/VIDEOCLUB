@@ -7,71 +7,107 @@ use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
 use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
 use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
 
-/* Llegado a este punto, vamos a relacionar los clientes y los soportes mediante la clase Videoclub. Así pues crea la clase que representa el gráfico, teniendo en cuenta que:
-productos es un array de Soporte
-socios es una array de Cliente
-Los métodos públicos de incluir algún soporte, crearán la clase y llamarán al método privado de incluirProducto, el cual es el encargado de introducirlo dentro del array. -->
-*/
-
-// require_once "Soporte.php";
-// require_once "Cliente.php";
-// require_once "CintaVideo.php";
-// require_once "Dvd.php";
-// require_once "Juego.php";
+/**
+ * Clase Videoclub
+ *
+ * Gestiona el catálogo de productos (soportes) y los socios (clientes) del videoclub.
+ * Permite incluir productos, registrar socios, realizar alquileres y devoluciones.
+ */
 class Videoclub
 {
-
+    /** @var string Nombre del videoclub */
     private string $nombre;
+
+    /** @var Soporte[] Lista de productos disponibles */
     private array $productos = [];
+
+    /** @var int Número total de productos registrados */
     private int $numProductos = 0;
+
+    /** @var Cliente[] Lista de socios registrados */
     private array $socios = [];
+
+    /** @var int Número total de socios registrados */
     private int $numSocios = 0;
 
+    /** @var int Número de productos actualmente alquilados */
     private int $numProductosAlquilados = 0;
+
+    /** @var int Número total de alquileres realizados */
     private int $numTotalAlquileres = 0;
 
-
+    /**
+     * Constructor del videoclub
+     *
+     * @param string $nombre Nombre del videoclub
+     */
     public function __construct(string $nombre)
     {
         $this->nombre = $nombre;
     }
 
+    /**
+     * Devuelve el número de productos alquilados actualmente
+     *
+     * @return int
+     */
     public function getNumProductosAlquilados(): int
     {
         return $this->numProductosAlquilados;
     }
 
+    /**
+     * Devuelve el número total de alquileres realizados
+     *
+     * @return int
+     */
     public function getNumTotalAlquileres(): int
     {
         return $this->numTotalAlquileres;
     }
 
-
-
+    /**
+     * Muestra todos los productos registrados
+     *
+     * @return void
+     */
     public function listarProductos(): void
     {
-
-        foreach ($this->productos as  $producto) {
+        foreach ($this->productos as $producto) {
             echo $producto->muestraResumen();
         }
     }
 
-
+    /**
+     * Muestra todos los socios registrados
+     *
+     * @return void
+     */
     public function listarSocios(): void
     {
-        foreach ($this->socios as  $socio) {
+        foreach ($this->socios as $socio) {
             echo $socio->muestraResumen();
         }
     }
 
-
+    /**
+     * Añade un producto al catálogo
+     *
+     * @param Soporte $s
+     * @return void
+     */
     private function incluirProducto(Soporte $s): void
     {
         $this->productos[] = $s;
         $this->numProductos++;
     }
 
-
+    /**
+     * Añade un nuevo socio al videoclub
+     *
+     * @param Cliente $c
+     * @return Videoclub
+     */
     public function incluirSocio(Cliente $c): Videoclub
     {
         $this->socios[] = $c;
@@ -79,20 +115,30 @@ class Videoclub
         return $this;
     }
 
-
+    /**
+     * Crea y añade una cinta de vídeo al catálogo
+     *
+     * @param string $titulo
+     * @param float $precio
+     * @param int $duracion
+     * @return Videoclub
+     */
     public function incluirCintaVideo(string $titulo, float $precio, int $duracion): Videoclub
     {
-        $cintaVideo = new CintaVideo(
-            $titulo,
-            $this->numProductos + 1,
-            $precio,
-            $duracion
-        );
+        $cintaVideo = new CintaVideo($titulo, $this->numProductos + 1, $precio, $duracion);
         $this->incluirProducto($cintaVideo);
         return $this;
     }
 
-
+    /**
+     * Crea y añade un DVD al catálogo
+     *
+     * @param string $titulo
+     * @param float $precio
+     * @param string $idiomas
+     * @param string $pantalla
+     * @return Videoclub
+     */
     public function incluirDvd(string $titulo, float $precio, string $idiomas, string $pantalla): Videoclub
     {
         $dvd = new Dvd($titulo, $this->numProductos + 1, $precio, $idiomas, $pantalla);
@@ -100,19 +146,33 @@ class Videoclub
         return $this;
     }
 
-
+    /**
+     * Crea y añade un juego al catálogo
+     *
+     * @param string $titulo
+     * @param float $precio
+     * @param string $consola
+     * @param int $minJ
+     * @param int $maxJ
+     * @return Videoclub
+     */
     public function incluirJuego(string $titulo, float $precio, string $consola, int $minJ, int $maxJ): Videoclub
     {
-
         $juego = new Juego($titulo, $this->numProductos + 1, $precio, $consola, $minJ, $maxJ);
         $this->incluirProducto($juego);
         return $this;
     }
 
 
+       /**
+     * Alquila un producto a un socio por número de cliente y número de soporte
+     *
+     * @param int $numeroCliente Número identificador del cliente
+     * @param int $numeroSoporte Número identificador del soporte
+     * @return Videoclub
+     */
     public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): Videoclub
     {
-
         $socioEncontrado = null;
         foreach ($this->socios as $socio) {
             if ($socio->getNumero() === $numeroCliente) {
@@ -155,10 +215,19 @@ class Videoclub
         return $this;
     }
 
-    // Método 336
+    /**
+     * Alquila varios productos a un socio
+     *
+     * @param int $numSocio Número identificador del socio
+     * @param int[] $numerosProductos Array de números de productos a alquilar
+     * @return Videoclub
+     * @throws ClienteNoEncontradoException
+     * @throws SoporteNoEncontradoException
+     * @throws SoporteYaAlquiladoException
+     * @throws CupoSuperadoException
+     */
     public function alquilarSocioProductos(int $numSocio, array $numerosProductos): Videoclub
     {
-        // Buscar el socio
         $socioEncontrado = null;
         foreach ($this->socios as $socio) {
             if ($socio->getNumero() === $numSocio) {
@@ -171,13 +240,10 @@ class Videoclub
             throw new ClienteNoEncontradoException("Cliente con número {$numSocio} no encontrado");
         }
 
-        // Verificar que todos los productos existen y están disponibles
         $productosParaAlquilar = [];
 
         foreach ($numerosProductos as $numProducto) {
             $productoEncontrado = null;
-
-            // Buscar el producto
             foreach ($this->productos as $producto) {
                 if ($producto->getNumero() === $numProducto) {
                     $productoEncontrado = $producto;
@@ -189,7 +255,6 @@ class Videoclub
                 throw new SoporteNoEncontradoException("Producto con número {$numProducto} no encontrado");
             }
 
-            // Verificar si el socio ya tiene alquilado este producto
             if ($socioEncontrado->tieneAlquilado($productoEncontrado)) {
                 throw new SoporteYaAlquiladoException("El producto {$numProducto} ya está alquilado por el socio {$numSocio}");
             }
@@ -197,21 +262,18 @@ class Videoclub
             $productosParaAlquilar[] = $productoEncontrado;
         }
 
-        // Verificar que el socio tiene cupo suficiente para todos los productos
         $alquileresActuales = count($socioEncontrado->getSoportesAlquilados());
         $totalDespuesDeAlquilar = $alquileresActuales + count($productosParaAlquilar);
 
         if ($totalDespuesDeAlquilar > $socioEncontrado->getMaxAlquilerConcurrente()) {
-            throw new CupoSuperadoException("El socio {$numSocio} no tiene cupo suficiente para alquilar " . count($numerosProductos) . " productos. Cupo actual: {$alquileresActuales}, máximo: {$socioEncontrado->getMaxAlquilerConcurrente()}");
+            throw new CupoSuperadoException("El socio {$numSocio} no tiene cupo suficiente para alquilar " . count($numerosProductos) . " productos.");
         }
 
-        // Alquilar todos los productos (si llegamos aquí, todo está OK)
         foreach ($productosParaAlquilar as $producto) {
             try {
                 $socioEncontrado->alquilar($producto);
-                echo "Alquiler exitoso: {$producto->getTitulo()} alquilado a {$socioEncontrado->getNombre()}<br>";
+                echo "Alquiler exitoso: {$producto->getTitulo()}<br>";
             } catch (\Exception $e) {
-                // Esto no debería pasar ya que verificamos todo antes
                 echo "Error inesperado al alquilar {$producto->getTitulo()}: {$e->getMessage()}<br>";
             }
         }
@@ -219,7 +281,13 @@ class Videoclub
         return $this;
     }
 
-
+    /**
+     * Devuelve un producto alquilado por un socio
+     *
+     * @param int $numSocio Número identificador del socio
+     * @param int $numeroProducto Número identificador del producto
+     * @return Videoclub
+     */
     public function devolverSocioProducto(int $numSocio, int $numeroProducto): Videoclub
     {
         $socioEncontrado = null;
@@ -231,7 +299,7 @@ class Videoclub
         }
 
         if (!$socioEncontrado) {
-            echo "❌ Error: Cliente no encontrado.<br>";
+            echo "Error: Cliente no encontrado.<br>";
             return $this;
         }
 
@@ -259,7 +327,13 @@ class Videoclub
         return $this;
     }
 
-
+    /**
+     * Devuelve varios productos alquilados por un socio
+     *
+     * @param int $numSocio Número identificador del socio
+     * @param int[] $numerosProductos Array de números de productos a devolver
+     * @return Videoclub
+     */
     public function devolverSocioProductos(int $numSocio, array $numerosProductos): Videoclub
     {
         $socioEncontrado = null;
