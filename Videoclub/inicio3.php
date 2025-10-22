@@ -1,5 +1,8 @@
 <?php
-include_once "../modelo/Videoclub.php"; // No incluimos nada más
+require_once "app/Dwes/proyectoVideoclub/Videoclub.php";
+require_once "app/Dwes/proyectoVideoclub/Cliente.php";
+use Dwes\ProyectoVideoclub\Videoclub;
+use Dwes\ProyectoVideoclub\Cliente;
 
 $vc = new Videoclub("Severo 8A",[],0,[],0); 
 
@@ -16,8 +19,8 @@ $vc->incluirCintaVideo("El nombre de la Rosa", 1.5, 140);
 $vc->listarProductos(); 
 
 //voy a crear algunos socios 
-$vc->incluirSocio(new CLiente("Amancio Ortega",2)); 
-$vc->incluirSocio(new Cliente("Pablo Picasso", 2)); 
+$vc->incluirSocio(new Cliente("Amancio Ortega",1));
+$vc->incluirSocio(new Cliente("Pablo Picasso", 2,2)); 
 
 $vc->alquilarSocioProducto(1,2); 
 $vc->alquilarSocioProducto(1,3); 

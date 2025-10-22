@@ -1,9 +1,11 @@
-<!-- Llegado a este punto, vamos a relacionar los clientes y los soportes mediante la clase Videoclub. Así pues crea la clase que representa el gráfico, teniendo en cuenta que:
+<?php
+namespace Dwes\ProyectoVideoclub;
+
+/* Llegado a este punto, vamos a relacionar los clientes y los soportes mediante la clase Videoclub. Así pues crea la clase que representa el gráfico, teniendo en cuenta que:
 productos es un array de Soporte
 socios es una array de Cliente
 Los métodos públicos de incluir algún soporte, crearán la clase y llamarán al método privado de incluirProducto, el cual es el encargado de introducirlo dentro del array. -->
-<?php
-namespace Dwes\ProyectoVideoclub;
+*/
 
 require_once "Soporte.php";
 require_once "Cliente.php";
@@ -14,17 +16,12 @@ class Videoclub {
 
     private string $nombre;
     private array $productos = [];
-    private int $numProductos;
+    private int $numProductos=0;
     private array $socios = [];
-    private int $numSocios;
+    private int $numSocios=0;
 
-    public function __construct(string $nombre, array $productos, int  $numProductos, array $socios, int $numSocios)
-    {
+    public function __construct(string $nombre) {
         $this->nombre = $nombre;
-        $this->productos = $productos;
-        $this->numProductos = $numProductos;
-        $this->socios = $socios;
-        $this->numSocios = $numSocios;
     }
 
 
@@ -98,8 +95,16 @@ class Videoclub {
     }
 
      if ($socioEncontrado && $productoEncontrado) {
-        return $socioEncontrado->alquilar($productoEncontrado);
+        $socioEncontrado->alquilar($productoEncontrado); 
+    } else {
+        if (!$socioEncontrado) {
+            echo "Socio con número $numeroCliente no encontrado.<br>";
+        }
+        if (!$productoEncontrado) {
+            echo "Producto con número $numeroSoporte no encontrado.<br>";
+        }
     }
+
 
     return $this;
 

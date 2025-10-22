@@ -3,6 +3,7 @@ require_once "app/Dwes/ProyectoVideoclub/Soporte.php";
 require_once "app/Dwes/ProyectoVideoclub/CintaVideo.php";
 require_once "app/Dwes/ProyectoVideoclub/Dvd.php";
 require_once "app/Dwes/ProyectoVideoclub/Juego.php";
+use Dwes\ProyectoVideoclub\Videoclub;
 
 use Dwes\ProyectoVideoclub\Soporte;
 use Dwes\ProyectoVideoclub\CintaVideo;
