@@ -7,11 +7,11 @@ socios es una array de Cliente
 Los métodos públicos de incluir algún soporte, crearán la clase y llamarán al método privado de incluirProducto, el cual es el encargado de introducirlo dentro del array. -->
 */
 
-require_once "Soporte.php";
-require_once "Cliente.php";
-require_once "CintaVideo.php";
-require_once "Dvd.php";
-require_once "Juego.php";
+// require_once "Soporte.php";
+// require_once "Cliente.php";
+// require_once "CintaVideo.php";
+// require_once "Dvd.php";
+// require_once "Juego.php";
 class Videoclub {
 
     private string $nombre;

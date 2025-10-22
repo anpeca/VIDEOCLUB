@@ -1,6 +1,7 @@
 <?php
-require_once "app/Dwes/proyectoVideoclub/Videoclub.php";
-require_once "app/Dwes/proyectoVideoclub/Cliente.php";
+// require_once "app/Dwes/proyectoVideoclub/Videoclub.php";
+// require_once "app/Dwes/proyectoVideoclub/Cliente.php";
+require_once "autoload.php";
 use Dwes\ProyectoVideoclub\Videoclub;
 use Dwes\ProyectoVideoclub\Cliente;
 

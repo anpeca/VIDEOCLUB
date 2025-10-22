@@ -1,8 +1,9 @@
 <?php
-require_once "app/Dwes/ProyectoVideoclub/CintaVideo.php";
-require_once "app/Dwes/ProyectoVideoclub/Dvd.php";
-require_once "app/Dwes/ProyectoVideoclub/Juego.php";
-require_once "app/Dwes/ProyectoVideoclub/Cliente.php";
+// require_once "app/Dwes/ProyectoVideoclub/CintaVideo.php";
+// require_once "app/Dwes/ProyectoVideoclub/Dvd.php";
+// require_once "app/Dwes/ProyectoVideoclub/Juego.php";
+// require_once "app/Dwes/ProyectoVideoclub/Cliente.php";
+require_once "autoload.php";
 use Dwes\ProyectoVideoclub\Videoclub;
 
 use Dwes\ProyectoVideoclub\CintaVideo;

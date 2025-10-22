@@ -1,7 +1,7 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
 
-require_once "Soporte.php";
+// require_once "Soporte.php";
 class CintaVideo extends Soporte {
 
     private int $duracion;
