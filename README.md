@@ -87,4 +87,4 @@ Proyecto educativo del IES Valle del Jerte (2DAW)
 
 Plasencia, 2025
 
-Nota: Este proyecto fue desarrollado con asistencia de DeepSeek para resolver errores y mejorar el código.
+Nota: Este proyecto fue desarrollado con asistencia de DeepSeek y Copilot para resolver errores y mejorar el código.
