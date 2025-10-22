@@ -1,160 +1,75 @@
 # 🎬 PROYECTO VIDEOCLUB
 
-## 📋 Descripción
-Este proyecto es un sistema de gestión para administrar la información de un videoclub, está realizado en PHP pensado con POO (Programación Orientada a Objetos). Tiene la capacidad de administrar clientes, productos (cintas de video, DVD, juegos) y realizar operaciones de alquiler.
+## 📋 ¿Qué es este proyecto?
+Es un programa para gestionar un videoclub, como los de antes donde se alquilaban películas y videojuegos. Está hecho en PHP usando programación orientada a objetos.
 
-## 🏗️ Estructura del Proyecto
+## 🏗️ ¿Cómo está organizado?
 Videoclub/
-├── app/
-│ └── Dwes/
-│ └── ProyectoVideoclub/
-│ ├── Util/
-│ │ ├── VideoclubException.php
-│ │ ├── SoporteYaAlquiladoException.php
-│ │ ├── CupoSuperadoException.php
-│ │ ├── SoporteNoEncontradoException.php
-│ │ └── ClienteNoEncontradoException.php
-│ ├── Soporte.php (clase abstracta)
-│ ├── Cliente.php
-│ ├── CintaVideo.php
-│ ├── Dvd.php
-│ ├── Juego.php
-│ └── Videoclub.php
-├── test/
-├── vendor/
-├── autoload.php
-├── inicio.php
-├── inicio2.php
-└── inicio3.php
+├── app/ ← Aquí está todo el código
+├── test/ ← Para hacer pruebas
+├── vendor/ ← Librerías externas
+└── inicio.php ← Archivos para probar
+## 🎯 ¿Qué puede hacer este programa?
 
+### 👥 Gestión de Clientes
+- **Registrar nuevos clientes** en el videoclub
+- **Controlar cuántas películas** puede alquilar cada cliente a la vez
+- **Ver el historial** de lo que ha alquilado cada cliente
+- **Devolver productos** cuando el cliente los trae de vuelta
 
+### 🎞️ Gestión de Productos
+- **Añadir nuevos productos**: películas en VHS, DVDs y videojuegos
+- **Mostrar información** de cada producto (duración, idiomas, consola...)
+- **Saber qué está disponible** y qué está alquilado
 
-## 🎯 Características Principales
+### 🔄 Operaciones de Alquiler
+- **Alquilar un producto** a un cliente
+- **Alquilar varios productos** a la vez
+- **Comprobar automáticamente** si hay problemas:
+  - ¿El producto ya está alquilado?
+  - ¿El cliente tiene cupo disponible?
+  - ¿Existe el producto y el cliente?
 
-### ✅ Características Implementadas
-- **POO Completo**: Herencia, encapsulación, polimorfismo
-- **Namespaces**: Organización con `Dwes\ProyectoVideoclub`
-- **Autoload**: Carga automática de clases
-- **Encadenamiento de métodos**: API fluida
-- **Manejo de excepciones**: Sistema personalizado de errores
-- **Tipado estricto**: PHP 7.4+ con tipos definidos
+## 🛡️ Sistema de Errores Inteligente
+El programa detecta problemas y avisa con mensajes claros:
 
-### 📊 Modelo de Clases
-Soporte (abstract)
-├── CintaVideo
-├── Dvd
-└── Juego
+- **"Este producto ya está alquilado"**
+- **"El cliente no puede alquilar más productos"** 
+- **"No encontramos este producto"**
+- **"No encontramos este cliente"**
 
-Cliente
-Videoclub
+🔄 Carga Automática
+El programa carga automáticamente los archivos necesarios, no hace falta importarlos uno por uno.
 
+📁 Organización con Namespaces
+El código está bien organizado como si fuera una biblioteca con secciones.
 
+🧪 Archivos para Probar
+inicio.php → Prueba los productos (DVDs, juegos...)
 
-## 🚀 Instalación y Uso
+inicio2.php → Prueba clientes y alquileres simples
 
-### Requisitos
-- PHP 7.4 o superior
-- Servidor web (XAMPP, WAMP, etc.)
-- Git (opcional)
+inicio3.php → Prueba TODO el sistema completo
 
-### Configuración
-1. Clonar el repositorio
-2. Colocar en directorio web (htdocs/www)
-3. Acceder via navegador a `inicio3.php`
-
-
-💡 Funcionalidades
-Gestión de Productos
-✅ Añadir cintas de video, DVDs y juegos
-
-✅ Listado de productos disponibles
-
-✅ Información detallada de cada producto
-
-Gestión de Clientes
-✅ Registro de socios
-
-✅ Sistema de alquiler con límites
-
-✅ Devolución de productos
-
-✅ Historial de alquileres
-
-Operaciones de Alquiler
-✅ Alquiler individual (alquilarSocioProducto)
-
-✅ Alquiler múltiple (alquilarSocioProductos)
-
-✅ Validación de disponibilidad
-
-✅ Control de cupos máximos
-
-🛡️ Sistema de Excepciones
-El proyecto incluye un sistema personalizado de excepciones:
-
-VideoclubException (padre)
-
-SoporteYaAlquiladoException
-
-CupoSuperadoException
-
-SoporteNoEncontradoException
-
-ClienteNoEncontradoException
-
-🔧 Características Técnicas
-Patrones Implementados
-Method Chaining: Encadenamiento de métodos
-
-Exception Handling: Manejo personalizado de errores
-
-Autoloading: Carga automática de clases
-
-Namespacing: Organización del código
-
-Buenas Prácticas
-Cada clase en archivo separado
-
-Tipado estricto en métodos y propiedades
-
-Documentación en código
-
-Separación de responsabilidades
-
-📝 Archivos de Prueba
-inicio.php: Pruebas básicas de productos
-
-inicio2.php: Pruebas de clientes y alquileres
-
-inicio3.php: Prueba completa del sistema
-
-🏷️ Versiones
-v0.331: Implementación de namespaces
-
-v0.337: Sistema de excepciones y autoload
-
-👥 Desarrollo
-Desarrolladores:
-
+👥 Desarrolladores
 Antonio Pérez Carrasco
 
 Iker Clemente Quijada
 
-Proyecto desarrollado como ejercicio educativo para el aprendizaje de:
+🎓 ¿Para qué se hizo?
+Este proyecto fue creado para aprender:
 
-Programación Orientada a Objetos en PHP
+Cómo programar con objetos en PHP
 
-Patrones de diseño
+Cómo organizar proyectos grandes
 
-Manejo de excepciones
+Cómo manejar errores correctamente
 
-Organización de proyectos
+Cómo trabajar en equipo
 
 📄 Licencia
-Proyecto educativo - 2DAW IES Valle del Jerte
+Proyecto educativo del IES Valle del Jerte (2DAW)
 
 Plasencia, 2025
 
-
-
-Este README se ha proporcionado con inteligencia artificial DeepSeek, también se utilizó para asistir en la  solución de errores.
+Nota: Este proyecto fue desarrollado con asistencia de DeepSeek para resolver errores y mejorar el código.
