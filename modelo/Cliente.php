@@ -9,7 +9,7 @@ alquilar(Soporte $s): bool -→ Debe comprobar si el soporte está alquilado y s
 
 class Cliente {
 
-    private string $nombre;
+    public string $nombre;
     private int $numero;
     private int $maxAlquilerConcurrente;
     private int $numSoportesAlquilados = 0;
@@ -34,7 +34,7 @@ class Cliente {
     }
 
     public function muestraResumen(): string {
-        return "Cliente: " . $this->nombre . " - Total alquileres: " . count($this->soportesAlquilados);
+        return "Cliente: " . $this->nombre . " - Total alquileres realizados: " . $this->numSoportesAlquilados;
     }
 
     public function tieneAlquilado(Soporte $s): bool {
@@ -47,52 +47,52 @@ class Cliente {
         return false;
     }
 
-    public function alquilar(Soporte $s): Cliente {
+    public function alquilar(Soporte $s): bool {
 
         if ($this->tieneAlquilado($s)) {
             echo "El soporte ya está alquilado por este cliente.<br>";
-            return $this;
+            return false;
         }
 
         if (count($this->soportesAlquilados) >= $this->maxAlquilerConcurrente) {
             echo "Ha superado el cupo de alquileres.<br>";
-            return $this;
+            return false;
         }
-
         $this->soportesAlquilados[] = $s;
         $this->numSoportesAlquilados++;
         echo "Soporte alquilado con éxito.<br>";
-        return $this;
+        return true;
     }
+
 
  
-    public function devolver(int $numSoporte): Cliente {
-        
-    foreach ($this->soportesAlquilados as $key => $soporte) {
+    public function devolver(int $numSoporte): bool {
 
-        if ($soporte->getNumero() === $numSoporte) {
-            
-            unset($this->soportesAlquilados[$key]);
-            //reindexamos el array
-            $this->soportesAlquilados=array_values($this->soportesAlquilados);
-            echo "Soporte devuelto con éxito.<br>";
-            return $this;
+        foreach ($this->soportesAlquilados as $key => $soporte) {
+
+            if ($soporte->getNumero() === $numSoporte) {
+
+                unset($this->soportesAlquilados[$key]);
+
+                $this->soportesAlquilados = array_values($this->soportesAlquilados);
+                echo "Soporte devuelto con éxito.<br>";
+                return true;
+            }
         }
+        echo "El cliente no tenía alquilado este soporte.<br>";
+        return false;
     }
-    echo "El cliente no tenía alquilado este soporte.<br>";
-    return $this;
-}
 
 
 
-    public function listaAlquileres(): void{
+
+    public function listaAlquileres(): void {
 
         echo "Hay ".$this->getNumSoportesAlquilados(). " Soportes alquilados:<br>";
 
-        for($i = 0; $i < sizeof($this -> soportesAlquilados); $i++){
-
-            echo $this->soportesAlquilados[$i]."\n";
+        foreach ($this->soportesAlquilados as $soporte) {
+            echo $soporte->muestraResumen() . "<br>";
+            }
         }
     }
-}
 ?>

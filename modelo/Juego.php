@@ -4,7 +4,7 @@ require_once "Soporte.php";
 
 class Juego extends Soporte {
 
-    private string $consola;
+    public string $consola;
     private int $minNumJugadores;
     private int $maxNumJugadores;
 

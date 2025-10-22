@@ -1,8 +1,14 @@
 <?php
-include_once "CintaVideo.php";
-include_once "Dvd.php";
-include_once "Juego.php";
-include_once "Cliente.php";
+
+// include_once "CintaVideo.php";
+// include_once "Dvd.php";
+// include_once "Juego.php";
+// include_once "Cliente.php";
+
+include_once "./modelo/CintaVideo.php";
+include_once "./modelo/Dvd.php";
+include_once "./modelo/Juego.php";
+include_once "./modelo/Cliente.php";
 
 //instanciamos un par de objetos cliente
 $cliente1 = new Cliente("Bruce Wayne", 23);

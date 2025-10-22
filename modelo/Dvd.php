@@ -2,8 +2,7 @@
 
 require_once "Soporte.php";
 
-class Dvd extends Soporte
-{
+class Dvd extends Soporte {
 
     public string $idiomas;
     private string $formatoPantalla;
@@ -21,3 +20,4 @@ class Dvd extends Soporte
         return parent::muestraResumen() . " Idiomas: {$this->idiomas}, Formato: {$this->formatoPantalla}";
     }
 }
+?>
