@@ -1,25 +1,25 @@
-PROYECTO VIDEOCLUB
-Este proyecto es un sistema de gestión para administrar la información de un videoclub, está realizado en php pensado con POO(programación Orienteda a Objeto).
-Tiene la capacidad de administrar clientes, productos(que son las cintas de video, DVD, juegos) y realizar operaciones de alquiler.
+# 🎬 PROYECTO VIDEOCLUB
 
-Estrucutra del proyecto
+## 📋 Descripción
+Este proyecto es un sistema de gestión para administrar la información de un videoclub, está realizado en PHP pensado con POO (Programación Orientada a Objetos). Tiene la capacidad de administrar clientes, productos (cintas de video, DVD, juegos) y realizar operaciones de alquiler.
 
+## 🏗️ Estructura del Proyecto
 Videoclub/
 ├── app/
-│   └── Dwes/
-│       └── ProyectoVideoclub/
-│           ├── Util/
-│           │   ├── VideoclubException.php
-│           │   ├── SoporteYaAlquiladoException.php
-│           │   ├── CupoSuperadoException.php
-│           │   ├── SoporteNoEncontradoException.php
-│           │   └── ClienteNoEncontradoException.php
-│           ├── Soporte.php (clase abstracta)
-│           ├── Cliente.php
-│           ├── CintaVideo.php
-│           ├── Dvd.php
-│           ├── Juego.php
-│           └── Videoclub.php
+│ └── Dwes/
+│ └── ProyectoVideoclub/
+│ ├── Util/
+│ │ ├── VideoclubException.php
+│ │ ├── SoporteYaAlquiladoException.php
+│ │ ├── CupoSuperadoException.php
+│ │ ├── SoporteNoEncontradoException.php
+│ │ └── ClienteNoEncontradoException.php
+│ ├── Soporte.php (clase abstracta)
+│ ├── Cliente.php
+│ ├── CintaVideo.php
+│ ├── Dvd.php
+│ ├── Juego.php
+│ └── Videoclub.php
 ├── test/
 ├── vendor/
 ├── autoload.php
@@ -27,63 +27,69 @@ Videoclub/
 ├── inicio2.php
 └── inicio3.php
 
-Características Principales
+text
 
-POO Completo: Herencia, encapsulación, polimorfismo
+## 🎯 Características Principales
 
-Namespaces: Organización con Dwes\ProyectoVideoclub
+### ✅ Características Implementadas
+- **POO Completo**: Herencia, encapsulación, polimorfismo
+- **Namespaces**: Organización con `Dwes\ProyectoVideoclub`
+- **Autoload**: Carga automática de clases
+- **Encadenamiento de métodos**: API fluida
+- **Manejo de excepciones**: Sistema personalizado de errores
+- **Tipado estricto**: PHP 7.4+ con tipos definidos
 
-Autoload: Carga automática de clases
+### 📊 Modelo de Clases
+Soporte (abstract)
+├── CintaVideo
+├── Dvd
+└── Juego
 
-Encadenamiento de métodos: API fluida
+Cliente
+Videoclub
 
-Manejo de excepciones: Sistema personalizado de errores
+text
 
-Tipado estricto: PHP 7.4+ con tipos definidos
+## 🚀 Instalación y Uso
 
-Instalación y Uso
+### Requisitos
+- PHP 7.4 o superior
+- Servidor web (XAMPP, WAMP, etc.)
+- Git (opcional)
 
-Requisitos
-PHP 7.4 o superior
+### Configuración
+1. Clonar el repositorio
+2. Colocar en directorio web (htdocs/www)
+3. Acceder via navegador a `inicio3.php`
 
-Servidor web (XAMPP, WAMP, etc.)
 
-Git (opcional)
-
-Configuración
-Clonar el repositorio
-
-Colocar en directorio web (htdocs/www)
-
-Acceder via navegador a inicio3.php
-
-Funcionalidades
+💡 Funcionalidades
 Gestión de Productos
- Añadir cintas de video, DVDs y juegos
+✅ Añadir cintas de video, DVDs y juegos
 
- Listado de productos disponibles
+✅ Listado de productos disponibles
 
- Información detallada de cada producto
+✅ Información detallada de cada producto
 
 Gestión de Clientes
- Registro de socios
+✅ Registro de socios
 
- Sistema de alquiler con límites
+✅ Sistema de alquiler con límites
 
- Devolución de productos
+✅ Devolución de productos
 
- Historial de alquileres
+✅ Historial de alquileres
 
 Operaciones de Alquiler
- Alquiler individual (alquilarSocioProducto)
+✅ Alquiler individual (alquilarSocioProducto)
 
- Alquiler múltiple (alquilarSocioProductos)
+✅ Alquiler múltiple (alquilarSocioProductos)
 
- Validación de disponibilidad
+✅ Validación de disponibilidad
 
- Control de cupos máximos
+✅ Control de cupos máximos
 
- Sistema de Excepciones
+🛡️ Sistema de Excepciones
 El proyecto incluye un sistema personalizado de excepciones:
 
 VideoclubException (padre)
@@ -96,7 +102,7 @@ SoporteNoEncontradoException
 
 ClienteNoEncontradoException
 
- Características Técnicas
+🔧 Características Técnicas
 Patrones Implementados
 Method Chaining: Encadenamiento de métodos
 
@@ -115,19 +121,25 @@ Documentación en código
 
 Separación de responsabilidades
 
- Archivos de Prueba
+📝 Archivos de Prueba
 inicio.php: Pruebas básicas de productos
 
 inicio2.php: Pruebas de clientes y alquileres
 
 inicio3.php: Prueba completa del sistema
 
- Versiones
+🏷️ Versiones
 v0.331: Implementación de namespaces
 
 v0.337: Sistema de excepciones y autoload
 
- Desarrollo
+👥 Desarrollo
+Desarrolladores:
+
+Antonio Pérez Carrasco
+
+Iker Clemente Quijada
+
 Proyecto desarrollado como ejercicio educativo para el aprendizaje de:
 
 Programación Orientada a Objetos en PHP
@@ -138,5 +150,11 @@ Manejo de excepciones
 
 Organización de proyectos
 
- Licencia
-Proyecto educativo - 2DAW IES Valle del Jerte Antonio Pérez Carrasco y Iker Clemente Quijada
+📄 Licencia
+Proyecto educativo - 2DAW IES Valle del Jerte
+
+Plasencia, 2024
+
+
+
+Este README se ha proporcionado con inteligencia artificial DeepSeek, también se utilizó para asistir en la  solución de errores.
