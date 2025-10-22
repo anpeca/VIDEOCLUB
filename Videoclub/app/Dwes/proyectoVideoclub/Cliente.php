@@ -1,7 +1,7 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
 /*
-<!-- Crear la clase Cliente. El constructor recibirá el nombre, numero y maxAlquilerConcurrente, este último pudiendo ser opcional y tomando como valor por defecto 3. Tras ello, añade getter/setter únicamente a numero, y un getter a numSoportesAlquilados (este campo va a almacenar un contador del total de alquileres que ha realizado). El array de soportes alquilados contedrá clases que hereden de Soporte. Finalmente, añade el método muestraResumen que muestre el nombre y la cantidad de alquileres (tamaño del array soportesAlquilados). 
+<!-- Crear la clase Cliente. E l constructor recibirá el nombre, numero y maxAlquilerConcurrente, este último pudiendo ser opcional y tomando como valor por defecto 3. Tras ello, añade getter/setter únicamente a numero, y un getter a numSoportesAlquilados (este campo va a almacenar un contador del total de alquileres que ha realizado). El array de soportes alquilados contedrá clases que hereden de Soporte. Finalmente, añade el método muestraResumen que muestre el nombre y la cantidad de alquileres (tamaño del array soportesAlquilados). 
  
 Dentro de Cliente, añade las siguiente operaciones:
 
