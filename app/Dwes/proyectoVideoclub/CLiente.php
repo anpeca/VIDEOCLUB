@@ -87,7 +87,7 @@ class Cliente {
 
     public function listaAlquileres(): void{
 
-        echo "Hay ".$this->getNumSoportesAlquilados(). " Soportes alquilados:<br>";
+        echo "Hay ".$this->getNumSoportesAlquilados(). " Soportes alquilados: <br>";
 
         for($i = 0; $i < sizeof($this -> soportesAlquilados); $i++){
 

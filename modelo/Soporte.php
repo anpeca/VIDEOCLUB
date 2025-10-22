@@ -1,6 +1,8 @@
 <?php
-class Soporte
-{
+
+require_once "Resumible.php";
+abstract class Soporte implements Resumible {
+    
     public string $titulo;
     protected int $numero;
     private float $precio;
@@ -8,11 +10,12 @@ class Soporte
 
     public function __construct(string $titulo, int $numero, float $precio)
     {
-
         $this->titulo = $titulo;
         $this->numero = $numero;
         $this->precio = $precio;
     }
+
+ 
 
     public function getTitulo(): string
     {
@@ -39,9 +42,6 @@ class Soporte
         return self::IVA;
     }
 
-    public function muestraResumen(): string
-    {
-        return "Título: {$this->titulo}, Nº: {$this->numero}, Precio: {$this->precio}€";
-    }
+    abstract public function muestraResumen(): string;
 }
 ?>

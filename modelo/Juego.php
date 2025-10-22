@@ -41,8 +41,10 @@ class Juego extends Soporte {
     }
 
     public function muestraResumen(): string {
-        return parent::muestraResumen() . " Consola: " . $this->consola . " Jugadores: " . $this->muestraJugadoresPosibles();
+        
+        return "Título: {$this->getTitulo()}, Nº: {$this->getNumero()}, Precio: {$this->getPrecio()}€ Consola: {$this->consola} Jugadores: {$this->muestraJugadoresPosibles()}";
     }
+
 
     public function __toString(): string {
         return "Consola: " . $this->consola . " Jugadores: " . $this->muestraJugadoresPosibles();

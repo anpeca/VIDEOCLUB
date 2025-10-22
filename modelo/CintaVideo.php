@@ -14,8 +14,12 @@ class CintaVideo extends Soporte {
         return $this->duracion;
     }
 
+    
     public function muestraResumen(): string {
-        return parent::muestraResumen() . " Duración: " . $this->duracion . " minutos";
+            
+        return "Título: {$this->getTitulo()}, Nº: {$this->getNumero()}, Precio: {$this->getPrecio()}€ Duración: {$this->duracion} minutos";
     }
+
+
 }
 ?>

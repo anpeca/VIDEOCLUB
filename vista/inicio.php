@@ -42,3 +42,5 @@
     echo "<br>Precio IVA incluido: " . number_format($miJuego->getPrecioConIva(), 2) . " euros";
     echo "<br>" . $miJuego->muestraResumen();
 ?>
+
+
