@@ -5,7 +5,7 @@ require_once "autoload.php";
 use Dwes\ProyectoVideoclub\Videoclub;
 use Dwes\ProyectoVideoclub\Cliente;
 
-$vc = new Videoclub("Severo 8A",[],0,[],0); 
+$vc = new Videoclub("Severo 8A"); 
 
 //voy a incluir unos cuantos soportes de prueba 
 $vc->incluirJuego("God of War", 19.99, "PS4", 1, 1); 
@@ -34,3 +34,7 @@ $vc->alquilarSocioProducto(1,6);
 
 //listo los socios 
 $vc->listarSocios();
+
+
+
+?>

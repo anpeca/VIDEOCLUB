@@ -1,6 +1,9 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
 
+use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
+use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
+use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;   
 /*
 <!-- Crear la clase Cliente. El constructor recibirá el nombre, numero y maxAlquilerConcurrente, este último pudiendo ser opcional y tomando como valor por defecto 3. Tras ello, añade getter/setter únicamente a numero, y un getter a numSoportesAlquilados (este campo va a almacenar un contador del total de alquileres que ha realizado). El array de soportes alquilados contedrá clases que hereden de Soporte. Finalmente, añade el método muestraResumen que muestre el nombre y la cantidad de alquileres (tamaño del array soportesAlquilados). 
  
@@ -31,6 +34,10 @@ class Cliente {
         $this->numero = $numero;
     }
 
+    public function getMaxAlquilerConcurrente(): int {
+        return $this->maxAlquilerConcurrente;
+    }
+
     public function getNumSoportesAlquilados(): int {
         return $this->numSoportesAlquilados;
     }
@@ -50,40 +57,38 @@ class Cliente {
     }
 
     public function alquilar(Soporte $s): Cliente {
+        
+        $s->alquilado = true;
 
         if ($this->tieneAlquilado($s)) {
-            echo "El soporte ya está alquilado por este cliente.<br>";
-            return $this;
+            throw new SoporteYaAlquiladoException("El soporte ya está alquilado por este cliente.");
         }
 
         if (count($this->soportesAlquilados) >= $this->maxAlquilerConcurrente) {
-            echo "Ha superado el cupo de alquileres.<br>";
-            return $this;
+            throw new CupoSuperadoException("Ha superado el cupo de alquileres.");
         }
 
         $this->soportesAlquilados[] = $s;
         $this->numSoportesAlquilados++;
-        echo "Soporte alquilado con éxito.<br>";
         return $this;
     }
 
  
     public function devolver(int $numSoporte): Cliente {
-        
-    foreach ($this->soportesAlquilados as $key => $soporte) {
 
-        if ($soporte->getNumero() === $numSoporte) {
-            
-            unset($this->soportesAlquilados[$key]);
-            //reindexamos el array
-            $this->soportesAlquilados=array_values($this->soportesAlquilados);
-            echo "Soporte devuelto con éxito.<br>";
-            return $this;
+        foreach ($this->soportesAlquilados as $key => $soporte) {
+
+            if ($soporte->getNumero() === $numSoporte) {
+
+                $soporte->alquilado = false; 
+                unset($this->soportesAlquilados[$key]);
+                $this->soportesAlquilados = array_values($this->soportesAlquilados);
+                return $this;
+            }
         }
+        throw new SoporteNoEncontradoException("El cliente no tenía alquilado este soporte.");
     }
-    echo "El cliente no tenía alquilado este soporte.<br>";
-    return $this;
-}
+
 
 
 

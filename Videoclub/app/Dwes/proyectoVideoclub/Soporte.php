@@ -1,16 +1,17 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
 
-class Soporte
-{
+class Soporte {
+
     public string $titulo;
     protected int $numero;
     private float $precio;
     private const  IVA = 21.0;
+    public bool $alquilado = false;
 
-    public function __construct(string $titulo, int $numero, float $precio)
-    {
 
+    public function __construct(string $titulo, int $numero, float $precio) {
+        
         $this->titulo = $titulo;
         $this->numero = $numero;
         $this->precio = $precio;
