@@ -153,7 +153,7 @@ Organización de proyectos
 📄 Licencia
 Proyecto educativo - 2DAW IES Valle del Jerte
 
-Plasencia, 2024
+Plasencia, 2025
 
 
 
