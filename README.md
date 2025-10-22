@@ -67,6 +67,21 @@ Cómo manejar errores correctamente
 
 Cómo trabajar en equipo
 
+## 🚀 Instalación Rápida
+
+### Paso 1: Descargar el proyecto
+```bash
+git clone https://github.com/anpeca/VIDEOCLUB.git
+Paso 2: Colocar en el servidor
+Copia la carpeta VIDEOCLUB a htdocs (si usas XAMPP) o www (si usas WAMP)
+
+Paso 3: Probar que funciona
+Abre tu navegador web
+
+Ve a: http://localhost/VIDEOCLUB/inicio3.php
+
+¡Deberías ver la página del videoclub funcionando!
+
 📄 Licencia
 Proyecto educativo del IES Valle del Jerte (2DAW)
 
