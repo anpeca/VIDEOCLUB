@@ -27,7 +27,7 @@ Videoclub/
 ├── inicio2.php
 └── inicio3.php
 
-text
+
 
 ## 🎯 Características Principales
 
@@ -48,7 +48,7 @@ Soporte (abstract)
 Cliente
 Videoclub
 
-text
+
 
 ## 🚀 Instalación y Uso
 
