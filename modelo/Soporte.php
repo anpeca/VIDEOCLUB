@@ -1,0 +1,47 @@
+<?php
+
+require_once "Resumible.php";
+abstract class Soporte implements Resumible {
+    
+    public string $titulo;
+    protected int $numero;
+    private float $precio;
+    private static float $IVA = 21.0;
+
+    public function __construct(string $titulo, int $numero, float $precio)
+    {
+        $this->titulo = $titulo;
+        $this->numero = $numero;
+        $this->precio = $precio;
+    }
+
+ 
+
+    public function getTitulo(): string
+    {
+        return $this->titulo;
+    }
+
+    public function getPrecio(): float
+    {
+        return $this->precio;
+    }
+
+    public function getPrecioConIVA(): float
+    {
+        return $this->precio * (1 + self::$IVA / 100);
+    }
+
+    public function getNumero(): int
+    {
+        return $this->numero;
+    }
+
+    public function getIVA(): float
+    {
+        return self::IVA;
+    }
+
+    abstract public function muestraResumen(): string;
+}
+?>
