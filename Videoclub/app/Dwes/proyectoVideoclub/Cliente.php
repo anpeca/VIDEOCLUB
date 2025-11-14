@@ -6,6 +6,8 @@ tieneAlquilado(Soporte $s): bool → Recorre el array de soportes y comprueba si
 alquilar(Soporte $s): bool -→ Debe comprobar si el soporte está alquilado y si no ha superado el cupo de alquileres. Al alquilar, incrementará el numSoportesAlquilados y almacenará el soporte en el array. Para cada caso debe mostrar un mensaje informando de lo ocurrido.-->
 
 <?php
+namespace Dwes\ProyectoVideoclub;
+
 
 class Cliente {
 
@@ -14,11 +16,15 @@ class Cliente {
     private int $maxAlquilerConcurrente;
     private int $numSoportesAlquilados = 0;
     private array $soportesAlquilados = [];
+    private $user;
+    private $password;
 
-    public function __construct(string $nombre, int $numero, int $maxAlquilerConcurrente = 3) {
+    public function __construct(string $nombre, int $numero, int $maxAlquilerConcurrente = 3,$user, $password) {
         $this->nombre = $nombre;
         $this->numero = $numero;
         $this->maxAlquilerConcurrente = $maxAlquilerConcurrente;
+        $this->user = $user;
+        $this->password = $password;
     }
 
     public function getNumero(): int {
@@ -31,6 +37,22 @@ class Cliente {
 
     public function getNumSoportesAlquilados(): int {
         return $this->numSoportesAlquilados;
+    }
+
+     public function getUser() {
+        return $this->user;
+    }
+
+    public function setUser($user) {
+        $this->user = $user;
+    }
+
+    public function getPassword() {
+        return $this->password;
+    }
+
+    public function setPassword($password) {
+        $this->password = $password;
     }
 
     public function muestraResumen(): string {
@@ -94,5 +116,11 @@ class Cliente {
             echo $this->soportesAlquilados[$i]."\n";
         }
     }
+
+     public function verificarCredenciales($user, $password) {
+        return $this->user === $user && $this->password === $password;
+    }
+
+
 }
 ?>
