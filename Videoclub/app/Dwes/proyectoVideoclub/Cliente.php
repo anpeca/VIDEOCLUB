@@ -121,6 +121,14 @@ class Cliente {
         return $this->user === $user && $this->password === $password;
     }
 
+       public function getAlquileres(): array {
+        return $this->soportesAlquilados;
+    }
+
+     public function verificarCredenciales($user, $password): bool {
+        return $this->user === $user && $this->password === $password;
+    }
+
 
 }
 ?>
