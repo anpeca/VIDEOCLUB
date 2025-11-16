@@ -6,10 +6,10 @@
 require_once "autoload.php";
 use Dwes\ProyectoVideoclub\Videoclub;
 
-use Dwes\ProyectoVideoclub\Soporte;
-use Dwes\ProyectoVideoclub\CintaVideo;
-use Dwes\ProyectoVideoclub\Dvd;
-use Dwes\ProyectoVideoclub\Juego;
+use app\Dwes\ProyectoVideoclub\Soporte;
+use app\Dwes\ProyectoVideoclub\CintaVideo;
+use app\Dwes\ProyectoVideoclub\Dvd;
+use app\Dwes\ProyectoVideoclub\Juego;
 
 // El código de prueba sigue igual...
 $soporte1 = new Soporte("Tenet", 22, 3);
