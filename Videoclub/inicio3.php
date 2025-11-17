@@ -16,10 +16,16 @@
  * así como la gestión de excepciones y el control de estado de los productos.
  */
 
-require_once "autoload.php";
+
+require_once "vendor/autoload.php";
+
+// require_once __DIR__ . '/../app/Dwes/proyectoVideoclub/Videoclub.php';
+
 
 use Dwes\ProyectoVideoclub\Videoclub;
 use Dwes\ProyectoVideoclub\Cliente;
+
+
 
 echo "<h2>Gestión del Videoclub Severo 8A</h2>";
 

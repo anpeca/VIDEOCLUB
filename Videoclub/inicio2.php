@@ -18,7 +18,7 @@
  * y la lógica de control de cupo y estado de alquiler en la clase Cliente.
  */
 
-require_once "autoload.php";
+require_once "vendor/autoload.php";
 
 use Dwes\ProyectoVideoclub\CintaVideo;
 use Dwes\ProyectoVideoclub\Dvd;

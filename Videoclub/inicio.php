@@ -13,7 +13,7 @@
  * de acceso y resumen de cada clase, así como la herencia desde Soporte.
  */
 
-require_once "autoload.php";
+require_once "vendor/autoload.php";
 
 use Dwes\ProyectoVideoclub\Soporte;
 use Dwes\ProyectoVideoclub\CintaVideo;
