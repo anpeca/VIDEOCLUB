@@ -15,7 +15,7 @@ if (!empty($_SESSION['logueado']) && $_SESSION['logueado'] === true) {
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Videoclub - Login</title>
     <style>
-        /* Mantén aquí tu CSS (copiado del original) */
+        
         body {
             font-family: Arial, sans-serif;
             max-width: 400px;

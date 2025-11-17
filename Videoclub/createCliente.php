@@ -45,6 +45,7 @@ if ($id === null) {
     }
     $id = $maxId + 1;
 } else {
+    $id = (int)$id;
     // comprobar unicidad del id
     if (isset($_SESSION['clientes'][$id])) {
         $_SESSION['form_error'] = 'El ID proporcionado ya existe. Elija otro.';
@@ -68,18 +69,32 @@ foreach ($_SESSION['clientes'] as $c) {
 }
 
 // Insertar en la sesión como array simple (práctica)
+// Guardar hash de la contraseña para mayor seguridad en entornos de práctica
+$passHash = password_hash($password, PASSWORD_DEFAULT);
+
 $_SESSION['clientes'][$id] = [
     'id' => $id,
     'nombre' => $nombre,
     'email' => $email,
     'telefono' => $telefono,
     'usuario' => $usuario,
-    // Si prefieres, guardar hash: password_hash($password, PASSWORD_DEFAULT)
-    'password' => $password
+    // Guardar el hash en vez de la contraseña en claro
+    'password' => $passHash
 ];
+
+// Inicializar estructura de alquileres para el nuevo cliente (consistencia)
+if (!isset($_SESSION['alquileres']) || !is_array($_SESSION['alquileres'])) {
+    $_SESSION['alquileres'] = [];
+}
+if (!isset($_SESSION['alquileres'][$id])) {
+    $_SESSION['alquileres'][$id] = [];
+}
 
 // Limpiar datos temporales de formulario
 unset($_SESSION['form_old'], $_SESSION['form_error']);
+
+// Mensaje flash para el admin (se muestra en mainAdmin.php si lo detectas)
+$_SESSION['admin_msg'] = "Cliente " . htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8') . " (ID $id) creado correctamente.";
 
 // Redirigir a mainAdmin para ver el cliente insertado
 header('Location: mainAdmin.php');

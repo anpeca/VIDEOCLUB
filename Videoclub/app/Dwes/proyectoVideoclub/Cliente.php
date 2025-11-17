@@ -211,7 +211,7 @@ class Cliente
     public function muestraResumen(): string
     {
         // Incluimos nombre y número de soportes activos en el resumen
-        return "Cliente: " . $this->nombre . " - Total alquileres: " . count($this->soportesAlquilados);
+        return "Cliente: " . $this->nombre . " - Total alquileres activos: " . count($this->soportesAlquilados);
     }
 
     /**
@@ -240,8 +240,6 @@ class Cliente
      */
     public function alquilar(Soporte $s): Cliente
     {
-        $s->alquilado = true;
-
         if ($this->tieneAlquilado($s)) {
             throw new SoporteYaAlquiladoException("El soporte ya está alquilado por este cliente.");
         }
@@ -250,6 +248,8 @@ class Cliente
             throw new CupoSuperadoException("Ha superado el cupo de alquileres.");
         }
 
+        // Marcar como alquilado y añadir al array de alquileres actuales
+        $s->alquilado = true;
         $this->soportesAlquilados[] = $s;
         $this->numSoportesAlquilados++;
         return $this;
@@ -282,10 +282,31 @@ class Cliente
      */
     public function listaAlquileres(): void
     {
-        echo "Hay " . $this->getNumSoportesAlquilados() . " soportes alquilados:<br>";
+        echo "Hay " . count($this->soportesAlquilados) . " soportes alquilados:<br>";
         foreach ($this->soportesAlquilados as $soporte) {
             echo $soporte->muestraResumen() . "<br>";
         }
     }
+
+    /**
+     * Carga una lista de objetos Soporte como alquileres actuales.
+     * Usar cuando reconstruyes el Cliente desde la sesión para mantener estado en memoria.
+     *
+     * @param Soporte[] $soportesArray
+     * @return void
+     */
+    public function setSoportesAlquiladosFromArray(array $soportesArray): void
+    {
+        $this->soportesAlquilados = array_values($soportesArray);
+        // histórico: recalcular el contador histórico si es razonable (aquí lo sincronizamos al número actual)
+        $this->numSoportesAlquilados = count($this->soportesAlquilados);
+        // marcar cada soporte como alquilado si procede
+        foreach ($this->soportesAlquilados as $s) {
+            if (is_object($s) && property_exists($s, 'alquilado')) {
+                $s->alquilado = true;
+            }
+        }
+    }
 }
+
 ?>

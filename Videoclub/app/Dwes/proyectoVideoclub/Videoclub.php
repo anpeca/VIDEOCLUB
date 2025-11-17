@@ -164,7 +164,7 @@ class Videoclub
     }
 
 
-       /**
+    /**
      * Alquila un producto a un socio por número de cliente y número de soporte
      *
      * @param int $numeroCliente Número identificador del cliente
@@ -202,6 +202,24 @@ class Videoclub
         try {
             $socioEncontrado->alquilar($productoEncontrado);
             echo "Soporte alquilado con éxito.<br>";
+
+            // sincronizar alquiler en $_SESSION
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $clienteId = (int) $socioEncontrado->getNumero();
+            $soporteId = (int) $productoEncontrado->getNumero();
+
+            if (!isset($_SESSION['alquileres']) || !is_array($_SESSION['alquileres'])) {
+                $_SESSION['alquileres'] = [];
+            }
+            if (!isset($_SESSION['alquileres'][$clienteId]) || !is_array($_SESSION['alquileres'][$clienteId])) {
+                $_SESSION['alquileres'][$clienteId] = [];
+            }
+            if (!in_array($soporteId, $_SESSION['alquileres'][$clienteId], true)) {
+                $_SESSION['alquileres'][$clienteId][] = $soporteId;
+            }
+            // fin sincronización
 
             if (!$productoEncontrado->alquilado) {
                 $productoEncontrado->alquilado = true;
@@ -273,6 +291,23 @@ class Videoclub
             try {
                 $socioEncontrado->alquilar($producto);
                 echo "Alquiler exitoso: {$producto->getTitulo()}<br>";
+
+                // sincronizar cada alquiler en la sesión
+                if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+                $clienteId = (int)$socioEncontrado->getNumero();
+                $soporteId = (int)$producto->getNumero();
+
+                if (!isset($_SESSION['alquileres']) || !is_array($_SESSION['alquileres'])) {
+                    $_SESSION['alquileres'] = [];
+                }
+                if (!isset($_SESSION['alquileres'][$clienteId]) || !is_array($_SESSION['alquileres'][$clienteId])) {
+                    $_SESSION['alquileres'][$clienteId] = [];
+                }
+                if (!in_array($soporteId, $_SESSION['alquileres'][$clienteId], true)) {
+                    $_SESSION['alquileres'][$clienteId][] = $soporteId;
+                }
+                // fin sincronización
+
             } catch (\Exception $e) {
                 echo "Error inesperado al alquilar {$producto->getTitulo()}: {$e->getMessage()}<br>";
             }
@@ -320,6 +355,20 @@ class Videoclub
             $socioEncontrado->devolver($numeroProducto);
             $productoEncontrado->alquilado = false;
             echo "Producto devuelto con éxito.<br>";
+
+            // mantener la sesión coherente: eliminar id de alquiler del cliente
+            if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+            $clienteId = (int)$socioEncontrado->getNumero();
+            $numeroProductoInt = (int)$numeroProducto;
+            if (!empty($_SESSION['alquileres'][$clienteId]) && is_array($_SESSION['alquileres'][$clienteId])) {
+                $pos = array_search($numeroProductoInt, $_SESSION['alquileres'][$clienteId], true);
+                if ($pos !== false) {
+                    unset($_SESSION['alquileres'][$clienteId][$pos]);
+                    $_SESSION['alquileres'][$clienteId] = array_values($_SESSION['alquileres'][$clienteId]);
+                }
+            }
+            // fin sincronización
+
         } catch (\Exception $e) {
             echo "Error al devolver: " . $e->getMessage() . "<br>";
         }
@@ -367,6 +416,20 @@ class Videoclub
                 $socioEncontrado->devolver($numeroProducto);
                 $productoEncontrado->alquilado = false;
                 echo "Producto {$numeroProducto} devuelto con éxito.<br>";
+
+                // sincronizar eliminación en sesión
+                if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+                $clienteId = (int)$socioEncontrado->getNumero();
+                $numeroProductoInt = (int)$numeroProducto;
+                if (!empty($_SESSION['alquileres'][$clienteId]) && is_array($_SESSION['alquileres'][$clienteId])) {
+                    $pos = array_search($numeroProductoInt, $_SESSION['alquileres'][$clienteId], true);
+                    if ($pos !== false) {
+                        unset($_SESSION['alquileres'][$clienteId][$pos]);
+                        $_SESSION['alquileres'][$clienteId] = array_values($_SESSION['alquileres'][$clienteId]);
+                    }
+                }
+                // fin sincronización
+
             } catch (\Exception $e) {
                 echo "Error al devolver el producto {$numeroProducto}: " . $e->getMessage() . "<br>";
             }

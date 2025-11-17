@@ -4,7 +4,6 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-
 // Solo aceptar POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
@@ -23,18 +22,28 @@ $password = $_POST['password'] ?? '';
 $_SESSION['last_user'] = $usuario; // rellenar form si error
 
 // Ruta al autoload (ajusta si tu vendor/autoload.php está en otra ubicación)
+// Intentamos localizar vendor/autoload.php de forma robusta
 $autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($autoloadPath)) {
+    $dir = __DIR__;
+    for ($i = 0; $i < 8; $i++) {
+        $try = $dir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+        if (file_exists($try)) {
+            $autoloadPath = $try;
+            break;
+        }
+        $dir = dirname($dir);
+    }
+}
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
-// -----------------------------------------------------------------------------
+
 // NOTA PARA PRUEBAS LOCALES:
 // El enunciado pedía que los datos de soportes y clientes se carguen cuando el
 // administrador entra (admin/admin). Para facilitar pruebas y permitir iniciar
 // sesión con "maria/maria123" sin entrar antes como admin, este bloque
 // autoinicializa clientes de prueba cuando no existen en la sesión.
-// Si quieres ceñirte estrictamente a la práctica, comenta o borra este bloque.
-// -----------------------------------------------------------------------------
 if (!isset($_SESSION['clientes']) || !is_array($_SESSION['clientes'])) {
     // Autoinicialización solo para desarrollo/pruebas
     $_SESSION['clientes'] = [
@@ -44,25 +53,17 @@ if (!isset($_SESSION['clientes']) || !is_array($_SESSION['clientes'])) {
     ];
 }
 
-// -----------------------------------------------------------------------------
 // 1) Primero: intentar autenticar contra clientes en sesión (si existen)
-// -----------------------------------------------------------------------------
 if (!empty($_SESSION['clientes']) && is_array($_SESSION['clientes'])) {
     foreach ($_SESSION['clientes'] as $clArr) {
         if (isset($clArr['usuario'], $clArr['password']) && $clArr['usuario'] === $usuario && $clArr['password'] === $password) {
             // Crear instancia Cliente y guardarla en sesión (mainCliente.php la usará)
-            if (!class_exists('\Dwes\ProyectoVideoclub\Cliente')) {
-                // Si la clase no está cargada, intentar autoload alternativo o error claro
-                // require_once __DIR__ . '/path/to/autoload.php';
-                // Aquí asumimos que el autoload ya se cargó arriba
-            }
+            // Guardamos en sesión los datos del cliente como array (opción B) para evitar deserialización insegura
             $nombre = $clArr['nombre'] ?? '';
             $id     = isset($clArr['id']) ? (int)$clArr['id'] : 0;
-            $user   = $clArr['usuario'];    
+            $user   = $clArr['usuario'];
             $pass   = $clArr['password'];
 
-            // Instanciar Cliente (el constructor puede crear el hash del password internamente)
-            // Guardar sólo los datos del cliente en la sesión (no el objeto) — opción B
             $_SESSION['cliente_actual_array'] = [
                 'id'       => $id,
                 'nombre'   => $nombre,
@@ -70,6 +71,19 @@ if (!empty($_SESSION['clientes']) && is_array($_SESSION['clientes'])) {
                 'password' => $pass,
                 // añade otros campos si los necesitas (email, telefono...)
             ];
+
+            // Inicializar/recuperar alquileres del cliente en la sesión (solución rápida)
+            if (!isset($_SESSION['alquileres']) || !is_array($_SESSION['alquileres'])) {
+                $_SESSION['alquileres'] = [];
+            }
+            // Si el propio array de cliente tiene un campo 'alquileres' con ids, restaurarlo
+            if (!empty($clArr['alquileres']) && is_array($clArr['alquileres'])) {
+                $_SESSION['alquileres'][$id] = $clArr['alquileres'];
+            } else {
+                if (!isset($_SESSION['alquileres'][$id])) {
+                    $_SESSION['alquileres'][$id] = [];
+                }
+            }
 
             $_SESSION['usuario']  = $user;
             $_SESSION['logueado'] = true;
@@ -81,9 +95,7 @@ if (!empty($_SESSION['clientes']) && is_array($_SESSION['clientes'])) {
     }
 }
 
-// -----------------------------------------------------------------------------
 // 2) Si no coincide con clientes, comprobar usuarios "globales" (admin/usuario)
-// -----------------------------------------------------------------------------
 if (isset($usuarios_validos[$usuario]) && $usuarios_validos[$usuario] === $password) {
     // Login correcto: inicializar sesión base
     $_SESSION['usuario']  = $usuario;
