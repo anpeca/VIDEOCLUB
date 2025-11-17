@@ -9,13 +9,25 @@ Videoclub/
 ├── test/ ← Para hacer pruebas
 ├── vendor/ ← Librerías externas
 └── inicio.php ← Archivos para probar
+└──mainCliente.php
+└──mainAdmin.php
+└──formCreateCliente.php
+└──formUpdateCliente.php
+└──createCliente.php
+└──removeCliente.php
+└──updateCliente.php
+
 ## 🎯 ¿Qué puede hacer este programa?
 
 ### 👥 Gestión de Clientes
-- **Registrar nuevos clientes** en el videoclub
+- **CRUD completo de clientes** en el videoclub
 - **Controlar cuántas películas** puede alquilar cada cliente a la vez
 - **Ver el historial** de lo que ha alquilado cada cliente
 - **Devolver productos** cuando el cliente los trae de vuelta
+
+  ### 👤 Acciones de cliente
+  -Inicio de sesión
+  -Visión de alquileres
 
 ### 🎞️ Gestión de Productos
 - **Añadir nuevos productos**: películas en VHS, DVDs y videojuegos
