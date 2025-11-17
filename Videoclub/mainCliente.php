@@ -1,22 +1,96 @@
 <?php
+// 1) Incluir autoload antes de session_start() para que PHP pueda deserializar objetos si los hay
+$autoload = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($autoload)) {
+    // búsqueda robusta subiendo directorios
+    $dir = __DIR__;
+    for ($i = 0; $i < 8; $i++) {
+        $try = $dir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+        if (file_exists($try)) {
+            $autoload = $try;
+            break;
+        }
+        $dir = dirname($dir);
+    }
+}
+if (file_exists($autoload)) {
+    require_once $autoload;
+} else {
+    die('Autoload no encontrado. Ajusta la ruta a vendor/autoload.php.');
+}
 
+// 2) Ahora iniciar la sesión (PHP deserializará con las clases ya cargadas)
 session_start();
 
-include_once "autoload.php";
+// 3) Reconstruir cliente a partir del array si existe (evitar objetos incompletos)
+$cliente = null;
 
-//verificamos que el usuario sea cliente:
+if (!empty($_SESSION['cliente_actual_array']) && is_array($_SESSION['cliente_actual_array'])) {
+    $arr = $_SESSION['cliente_actual_array'];
+    $cliente = new \Dwes\ProyectoVideoclub\Cliente(
+        $arr['nombre'] ?? '',
+        isset($arr['id']) ? (int)$arr['id'] : 0,
+        3,
+        $arr['usuario'] ?? null,
+        $arr['password'] ?? null
+    );
+    // opcional: guardar la instancia en sesión si quieres (no necesario con opción B)
+    // $_SESSION['cliente_actual'] = $cliente;
+} elseif (isset($_SESSION['cliente_actual']) && is_object($_SESSION['cliente_actual']) && $_SESSION['cliente_actual'] instanceof \Dwes\ProyectoVideoclub\Cliente) {
+    // si por compatibilidad aún hay un objeto correcto en sesión
+    $cliente = $_SESSION['cliente_actual'];
+}
 
-if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] !== 'cliente' || !isset($_SESSION['cliente_actual'])) {
+// 4) Protección de acceso
+if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] !== 'cliente' || !$cliente) {
     die("Error - debe <a href='index.php'>identificarse</a> como cliente.<br />");
 }
 
+// 5) Ahora ya puedes usar $cliente y llamar a getAlquileres()
+$alquileres = $cliente->getAlquileres();
+
+
+if (!empty($_SESSION['cliente_actual_array'])) {
+    $arr = $_SESSION['cliente_actual_array'];
+    $cliente = new \Dwes\ProyectoVideoclub\Cliente($arr['nombre'], (int)$arr['id'], 3, $arr['usuario'], $arr['password']);
+} elseif (isset($_SESSION['cliente_actual']) && is_object($_SESSION['cliente_actual'])) {
+    $cliente = $_SESSION['cliente_actual'];
+} else {
+    die("Error - debe <a href='index.php'>identificarse</a> como cliente.<br />");
+}
+
+
+// Cargar autoload de forma robusta (busca vendor/autoload.php o autoload.php subiendo directorios)
+$dir = __DIR__;
+$autoloadFound = false;
+for ($i = 0; $i < 8; $i++) {
+    $candidate = $dir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+    if (file_exists($candidate)) {
+        require_once $candidate;
+        $autoloadFound = true;
+        break;
+    }
+    $candidate2 = $dir . DIRECTORY_SEPARATOR . 'autoload.php';
+    if (file_exists($candidate2)) {
+        require_once $candidate2;
+        $autoloadFound = true;
+        break;
+    }
+    $dir = dirname($dir);
+}
+if (!$autoloadFound) {
+    die('Autoload no encontrado. Ajusta la ruta a vendor/autoload.php o autoload.php en la raíz del proyecto.');
+}
+
+//verificamos que el usuario sea cliente:
+if (!isset($_SESSION['usuario']) || $_SESSION['tipo'] !== 'cliente' || !isset($_SESSION['cliente_actual'])) {
+    die("Error - debe <a href='index.php'>identificarse</a> como cliente.<br />");
+}
 
 $cliente = $_SESSION['cliente_actual'];
 $alquileres = $cliente->getAlquileres();
 
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -126,13 +200,15 @@ $alquileres = $cliente->getAlquileres();
 
         <h2>Mis Alquileres Activos</h2>
 
-        <?php if (count($alquileres) > 0): ?>
-            <p>Tienes <strong><?= count($alquileres) ?></strong> soporte(s) alquilado(s) de un máximo de <?= $cliente->maxAlquilerConcurrente ?? 3 ?></p>
+        <?php
+        $maxAlq = method_exists($cliente, 'getMaxAlquilerConcurrente') ? $cliente->getMaxAlquilerConcurrente() : 3;
+        if (count($alquileres) > 0): ?>
+            <p>Tienes <strong><?= count($alquileres) ?></strong> soporte(s) alquilado(s) de un máximo de <?= $maxAlq ?></p>
 
             <?php foreach ($alquileres as $soporte): ?>
                 <div class="alquiler-card">
                     <h3>
-                        <?= htmlspecialchars($soporte->titulo) ?>
+                        <?= htmlspecialchars($soporte->getTitulo() ?? ($soporte->titulo ?? 'Soporte')) ?>
                         <span class="soporte-type">
                             <?= htmlspecialchars(get_class($soporte)) ?>
                         </span>
@@ -141,15 +217,15 @@ $alquileres = $cliente->getAlquileres();
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="label">Número:</span>
-                            <?= htmlspecialchars($soporte->numero) ?>
+                            <?= htmlspecialchars(method_exists($soporte, 'getNumero') ? $soporte->getNumero() : ($soporte->numero ?? '')) ?>
                         </div>
                         <div class="info-item">
                             <span class="label">Precio:</span>
-                            <?= htmlspecialchars($soporte->getPrecio()) ?> €
+                            <?= htmlspecialchars(method_exists($soporte, 'getPrecio') ? $soporte->getPrecio() : ($soporte->precio ?? '')) ?> €
                         </div>
                         <div class="info-item">
                             <span class="label">Precio con IVA:</span>
-                            <?= htmlspecialchars($soporte->getPrecioConIva()) ?> €
+                            <?= htmlspecialchars(method_exists($soporte, 'getPrecioConIva') ? $soporte->getPrecioConIva() : ($soporte->getPrecioConIVA() ?? ($soporte->precio ?? ''))) ?> €
                         </div>
                     </div>
 
@@ -158,29 +234,29 @@ $alquileres = $cliente->getAlquileres();
                         <div class="info-grid">
                             <div class="info-item">
                                 <span class="label">Duración:</span>
-                                <?= htmlspecialchars($soporte->duracion) ?> minutos
+                                <?= htmlspecialchars($soporte->duracion ?? '') ?> minutos
                             </div>
                         </div>
                     <?php elseif (get_class($soporte) === 'Dwes\ProyectoVideoclub\Dvd'): ?>
                         <div class="info-grid">
                             <div class="info-item">
                                 <span class="label">Idiomas:</span>
-                                <?= htmlspecialchars($soporte->idiomas) ?>
+                                <?= htmlspecialchars($soporte->idiomas ?? '') ?>
                             </div>
                             <div class="info-item">
                                 <span class="label">Formato Pantalla:</span>
-                                <?= htmlspecialchars($soporte->formatoPantalla) ?>
+                                <?= htmlspecialchars($soporte->formatoPantalla ?? '') ?>
                             </div>
                         </div>
                     <?php elseif (get_class($soporte) === 'Dwes\ProyectoVideoclub\Juego'): ?>
                         <div class="info-grid">
                             <div class="info-item">
                                 <span class="label">Consola:</span>
-                                <?= htmlspecialchars($soporte->consola) ?>
+                                <?= htmlspecialchars($soporte->consola ?? '') ?>
                             </div>
                             <div class="info-item">
                                 <span class="label">Jugadores:</span>
-                                <?= htmlspecialchars($soporte->muestraJugadoresPosibles()) ?>
+                                <?= htmlspecialchars(method_exists($soporte, 'muestraJugadoresPosibles') ? $soporte->muestraJugadoresPosibles() : '') ?>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -189,9 +265,12 @@ $alquileres = $cliente->getAlquileres();
                     <div class="info-item" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
                         <span class="label">Resumen:</span><br>
                         <?php
-                        // Llamamos al método muestraResumen pero capturamos la salida
                         ob_start();
-                        $soporte->muestraResumen();
+                        if (method_exists($soporte, 'muestraResumen')) {
+                            $soporte->muestraResumen();
+                        } else {
+                            echo $soporte->getTitulo() ?? ($soporte->titulo ?? 'Soporte');
+                        }
                         $resumen = ob_get_clean();
                         echo nl2br(htmlspecialchars($resumen));
                         ?>

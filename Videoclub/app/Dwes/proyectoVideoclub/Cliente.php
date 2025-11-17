@@ -108,6 +108,16 @@ class Cliente
     }
 
     /**
+     * Alias para compatibilidad con las vistas que esperan getAlquileres()
+     *
+     * @return Soporte[]
+     */
+    public function getAlquileres(): array
+    {
+        return $this->getSoportesAlquilados();
+    }
+
+    /**
      * Devuelve el número total de soportes alquilados (histórico)
      *
      * @return int

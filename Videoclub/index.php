@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 // Si ya está logueado, redirigir a main.php
 if (!empty($_SESSION['logueado']) && $_SESSION['logueado'] === true) {
     header('Location: main.php');

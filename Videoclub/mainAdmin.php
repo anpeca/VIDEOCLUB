@@ -120,6 +120,27 @@ function clienteGetId($c)
             border-radius: 6px;
             text-decoration: none;
         }
+
+        .btn-delete {
+            background: #dc3545;
+            color: #fff;
+            border: 0;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .flash {
+            background: #e9ffe9;
+            border: 1px solid #b5e6b5;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .actions-cell {
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -128,6 +149,14 @@ function clienteGetId($c)
         <h1>Bienvenido, <?php echo htmlspecialchars($usuario); ?></h1>
         <div><a class="button" href="logout.php">Cerrar sesión</a></div>
     </div>
+
+    <?php
+    // Mostrar mensaje flash admin si existe
+    if (!empty($_SESSION['admin_msg'])) {
+        echo '<div class="flash">' . htmlspecialchars($_SESSION['admin_msg']) . '</div>';
+        unset($_SESSION['admin_msg']);
+    }
+    ?>
 
     <div class="section">
         <h2>Listado de clientes (<?php echo is_array($clientes) ? count($clientes) : '0'; ?>)</h2>
@@ -142,16 +171,36 @@ function clienteGetId($c)
                         <th>Nombre</th>
                         <th>Email</th>
                         <th>Teléfono</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($clientes as $c): ?>
+                        <?php
+                        $cid = clienteGetId($c);
+                        $cusuario = clienteGetUsuario($c);
+                        $cnombre = clienteGetNombre($c);
+                        $cemail = clienteGetEmail($c);
+                        $ctel = clienteGetTelefono($c);
+                        // Asegurar que el id que enviaremos en POST es un entero cuando sea posible
+                        $cidValue = is_numeric($cid) ? (int)$cid : htmlspecialchars($cid);
+                        ?>
                         <tr>
-                            <td><?php echo htmlspecialchars(clienteGetId($c)); ?></td>
-                            <td><?php echo htmlspecialchars(clienteGetUsuario($c)); ?></td>
-                            <td><?php echo htmlspecialchars(clienteGetNombre($c)); ?></td>
-                            <td><?php echo htmlspecialchars(clienteGetEmail($c)); ?></td>
-                            <td><?php echo htmlspecialchars(clienteGetTelefono($c)); ?></td>
+                            <td><?php echo htmlspecialchars($cid); ?></td>
+                            <td><?php echo htmlspecialchars($cusuario); ?></td>
+                            <td><?php echo htmlspecialchars($cnombre); ?></td>
+                            <td><?php echo htmlspecialchars($cemail); ?></td>
+                            <td><?php echo htmlspecialchars($ctel); ?></td>
+                            <td class="actions-cell">
+                                <!-- Botón Borrar: formulario POST con confirmación JS -->
+                                <form method="post" action="removeCliente.php" onsubmit="return confirm('¿Seguro que quieres eliminar al cliente <?php echo addslashes($cnombre ?: $cusuario); ?> (ID <?php echo $cidValue; ?>)?');" style="display:inline">
+                                    <input type="hidden" name="id" value="<?php echo $cidValue; ?>">
+                                    <button type="submit" class="btn-delete">Borrar</button>
+                                </form>
+
+                                <!-- Enlaces adicionales: editar (por ejemplo) -->
+                                <a href="formUpdateCliente.php?id=<?php echo urlencode($cid); ?>" style="margin-left:8px;">Editar</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
