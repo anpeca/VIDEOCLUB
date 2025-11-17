@@ -26,8 +26,8 @@ Videoclub/
 - **Devolver productos** cuando el cliente los trae de vuelta
 
   ### 👤 Acciones de cliente
-  -Inicio de sesión
-  -Visión de alquileres
+ - **Inicio de sesión
+ - **Visión de alquileres
 
 ### 🎞️ Gestión de Productos
 - **Añadir nuevos productos**: películas en VHS, DVDs y videojuegos
