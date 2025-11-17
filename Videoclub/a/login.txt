@@ -1,0 +1,55 @@
+<?php
+session_start();
+
+// Solo aceptar POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php');
+    exit();
+}
+
+// Usuarios válidos (en producción usar fuente segura)
+$usuarios_validos = [
+    'admin'   => 'admin',
+    'usuario' => 'usuario'
+];
+
+$usuario  = trim($_POST['usuario'] ?? '');
+$password = $_POST['password'] ?? '';
+
+$_SESSION['last_user'] = $usuario; // rellenar form si error
+
+if (isset($usuarios_validos[$usuario]) && $usuarios_validos[$usuario] === $password) {
+    // Login correcto: inicializar sesión base
+    $_SESSION['usuario']  = $usuario;
+    $_SESSION['logueado'] = true;
+    $_SESSION['tipo']     = ($usuario === 'admin') ? 'admin' : 'cliente';
+
+    // Si es admin, cargar datos de prueba (arrays asociativos) en la sesión
+    if ($usuario === 'admin') {
+        $_SESSION['soportes'] = [
+            1 => ['id' => 1, 'tipo' => 'CintaVideo', 'titulo' => 'Tenet',  'precio' => 3.00,  'cantidad' => 2],
+            2 => ['id' => 2, 'tipo' => 'CintaVideo', 'titulo' => 'Los cazafantasmas', 'precio' => 3.50, 'cantidad' => 1],
+            3 => ['id' => 3, 'tipo' => 'Dvd',       'titulo' => 'Origen', 'precio' => 4.50,  'cantidad' => 5],
+            4 => ['id' => 4, 'tipo' => 'Dvd',       'titulo' => 'El Imperio Contraataca', 'precio' => 3.00, 'cantidad' => 3],
+            5 => ['id' => 5, 'tipo' => 'Juego',     'titulo' => 'The Last of Us Part II', 'precio' => 49.99,'cantidad' => 1],
+        ];
+
+        $_SESSION['clientes'] = [
+            101 => ['id' => 101, 'nombre' => 'María Pérez',   'email' => 'maria@example.com', 'telefono' => '600111222'],
+            102 => ['id' => 102, 'nombre' => 'Juan López',    'email' => 'juan@example.com',  'telefono' => '600222333'],
+            103 => ['id' => 103, 'nombre' => 'Ana Rodríguez', 'email' => 'ana@example.com',   'telefono' => '600333444'],
+        ];
+
+        header('Location: mainAdmin.php');
+        exit();
+    }
+
+    // Usuario cliente: redirige a main cliente
+    header('Location: main.php');
+    exit();
+}
+
+// Credenciales incorrectas
+$_SESSION['login_error'] = 'Usuario o contraseña incorrectos';
+header('Location: index.php');
+exit();

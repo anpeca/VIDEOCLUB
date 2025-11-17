@@ -31,17 +31,40 @@ class Cliente
     private array $soportesAlquilados = [];
 
     /**
+     * Usuario asociado al cliente (login)
+     *
+     * @var string|null
+     */
+    private ?string $user = null;
+
+    /**
+     * Hash de la contraseña (no almacenar la contraseña en claro)
+     *
+     * @var string|null
+     */
+    private ?string $passwordHash = null;
+
+    /**
      * Constructor de Cliente
      *
      * @param string $nombre Nombre del cliente
      * @param int $numero Número identificador
      * @param int $maxAlquilerConcurrente Máximo de alquileres simultáneos (por defecto 3)
+     * @param string|null $user Nombre de usuario opcional para login
+     * @param string|null $plainPassword Contraseña en claro opcional (se almacenará como hash)
      */
-    public function __construct(string $nombre, int $numero, int $maxAlquilerConcurrente = 3)
+    public function __construct(string $nombre, int $numero, int $maxAlquilerConcurrente = 3, ?string $user = null, ?string $plainPassword = null)
     {
         $this->nombre = $nombre;
         $this->numero = $numero;
         $this->maxAlquilerConcurrente = $maxAlquilerConcurrente;
+
+        if ($user !== null) {
+            $this->user = $user;
+        }
+        if ($plainPassword !== null) {
+            $this->setPassword($plainPassword);
+        }
     }
 
     /**
@@ -95,12 +118,89 @@ class Cliente
     }
 
     /**
+     * Obtiene el nombre del cliente
+     *
+     * @return string
+     */
+    public function getNombre(): string
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Establece el nombre del cliente
+     *
+     * @param string $nombre
+     */
+    public function setNombre(string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    /**
+     * Obtiene el usuario de login asociado al cliente
+     *
+     * @return string|null
+     */
+    public function getUser(): ?string
+    {
+        return $this->user;
+    }
+
+    /**
+     * Establece el usuario de login asociado al cliente
+     *
+     * @param string $user
+     */
+    public function setUser(string $user): void
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * Establece la contraseña en texto plano (se guarda como hash internamente)
+     *
+     * @param string $plain
+     * @return void
+     */
+    public function setPassword(string $plain): void
+    {
+        // Usar password_hash para seguridad; PASSWORD_DEFAULT es adecuado para prácticas
+        $this->passwordHash = password_hash($plain, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Verifica una contraseña en texto plano contra el hash almacenado
+     *
+     * @param string $plain
+     * @return bool
+     */
+    public function verifyPassword(string $plain): bool
+    {
+        if ($this->passwordHash === null) {
+            return false;
+        }
+        return password_verify($plain, $this->passwordHash);
+    }
+
+    /**
+     * Devuelve true si el cliente tiene contraseña configurada (útil para comprobaciones)
+     *
+     * @return bool
+     */
+    public function hasPassword(): bool
+    {
+        return $this->passwordHash !== null;
+    }
+
+    /**
      * Muestra un resumen del cliente
      *
      * @return string
      */
     public function muestraResumen(): string
     {
+        // Incluimos nombre y número de soportes activos en el resumen
         return "Cliente: " . $this->nombre . " - Total alquileres: " . count($this->soportesAlquilados);
     }
 
