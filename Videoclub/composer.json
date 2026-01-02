@@ -1,0 +1,14 @@
+{
+    "name": "antonio/videoclub",
+    "autoload": {
+        "psr-4": {
+            "Videoclub\\": "src/"
+        }
+    },
+    "require": {
+        "monolog/monolog": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    }
+}
