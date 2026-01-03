@@ -1,41 +1,59 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
 
-/* Llegado a este punto, vamos a relacionar los clientes y los soportes mediante la clase Videoclub. Así pues crea la clase que representa el gráfico, teniendo en cuenta que:
-productos es un array de Soporte
-socios es una array de Cliente
-Los métodos públicos de incluir algún soporte, crearán la clase y llamarán al método privado de incluirProducto, el cual es el encargado de introducirlo dentro del array. -->
-*/
+use Dwes\ProyectoVideoclub\Util\ClienteNoEncontradoException;
+use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
+use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
+use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Exception;
+use Dwes\ProyectoVideoclub\Util\LogFactory;
 
-// require_once "Soporte.php";
-// require_once "Cliente.php";
-// require_once "CintaVideo.php";
-// require_once "Dvd.php";
-// require_once "Juego.php";
-class Videoclub {
-
+class Videoclub
+{
     private string $nombre;
     private array $productos = [];
-    private int $numProductos=0;
+    private int $numProductos = 0;
     private array $socios = [];
-    private int $numSocios=0;
+    private int $numSocios = 0;
+    private Logger $log;
 
-    public function __construct(string $nombre) {
+    public function __construct(string $nombre)
+    {
         $this->nombre = $nombre;
-    }
 
+
+        $this->log = LogFactory::crearLogger('VideoclubLogger', 'videoclub.log');
+        $this->log->debug("Videoclub '{$this->nombre}' creado.");
+
+
+        // // Configurar Monolog
+        // $logDir = __DIR__ . '/../../logs';
+        // if (!is_dir($logDir)) {
+        //     mkdir($logDir, 0777, true);
+        // }
+
+        // $this->log = new Logger('VideoclubLogger');
+        // $this->log->pushHandler(new StreamHandler($logDir . '/videoclub.log', Logger::DEBUG));
+        // $this->log->debug("Videoclub '{$this->nombre}' creado.");
+    }
 
     public function listarProductos(): void
     {
-
-        foreach ($this->productos as  $producto) {
-            echo $producto->muestraResumen();
+        foreach ($this->productos as $producto) {
+            $linea = method_exists($producto, 'muestraResumen') ? $producto->muestraResumen() : json_encode($producto);
+            $this->log->info($linea);
+            // echo $linea . "<br>"; // opcional para depuración
         }
     }
+
     public function listarSocios(): void
     {
-        foreach ($this->socios as  $socio) {
-            echo $socio->muestraResumen();
+        foreach ($this->socios as $socio) {
+            $linea = method_exists($socio, 'muestraResumen') ? $socio->muestraResumen() : json_encode($socio);
+            $this->log->info($linea);
+            // echo $linea . "<br>"; // opcional
         }
     }
 
@@ -43,72 +61,112 @@ class Videoclub {
     {
         $this->productos[] = $s;
         $this->numProductos++;
+        $this->log->debug("Producto incluido: " . (method_exists($s, 'getTitulo') ? $s->getTitulo() : 'desconocido'));
     }
-
 
     public function incluirSocio(Cliente $c): Videoclub
     {
         $this->socios[] = $c;
         $this->numSocios++;
+        $this->log->debug("Socio incluido: " . $c->getNombre());
         return $this;
     }
-    
 
-    public function incluirCintaVideo(string $titulo, float $precio, int $duracion): Videoclub{
-        $cintaVideo= new CintaVideo($titulo,$this->numProductos + 1,
-        $precio, $duracion);
+    public function incluirCintaVideo(string $titulo, float $precio, int $duracion): Videoclub
+    {
+        $cintaVideo = new CintaVideo($titulo, $this->numProductos + 1, $precio, $duracion);
         $this->incluirProducto($cintaVideo);
         return $this;
     }
 
-
-    public function incluirDvd(string $titulo,float $precio, string $idiomas, string $pantalla): Videoclub{
-        $dvd=new Dvd($titulo, $this->numProductos + 1,$precio,$idiomas,$pantalla);
+    public function incluirDvd(string $titulo, float $precio, string $idiomas, string $pantalla): Videoclub
+    {
+        $dvd = new Dvd($titulo, $this->numProductos + 1, $precio, $idiomas, $pantalla);
         $this->incluirProducto($dvd);
         return $this;
     }
-    
 
-   public function incluirJuego(string $titulo, float $precio, string $consola, int $minJ, int $maxJ): Videoclub
-{
-  
-    $juego = new Juego($titulo, $this->numProductos + 1, $precio, $consola, $minJ, $maxJ);
-    $this->incluirProducto($juego);
-    return $this;
-}
+    public function incluirJuego(string $titulo, float $precio, string $consola, int $minJ, int $maxJ): Videoclub
+    {
+        $juego = new Juego($titulo, $this->numProductos + 1, $precio, $consola, $minJ, $maxJ);
+        $this->incluirProducto($juego);
+        return $this;
+    }
 
-    public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): VideoClub{
-        $socioEncontrado= null;
-        foreach($this->socios as $socio){
-            if($socio->getNumero()=== $numeroCliente){
-                $socioEncontrado=$socio;
+    public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): Videoclub
+    {
+        $socio = null;
+        foreach ($this->socios as $c) {
+            if ($c->getNumero() === $numeroCliente) {
+                $socio = $c;
                 break;
             }
         }
 
-         $productoEncontrado = null;
-          foreach ($this->productos as $producto) {
-             if ($producto->getNumero() === $numeroSoporte) {
-            $productoEncontrado = $producto;
-            break;
+        $producto = null;
+        foreach ($this->productos as $p) {
+            if ($p->getNumero() === $numeroSoporte) {
+                $producto = $p;
+                break;
             }
-    }
-
-     if ($socioEncontrado && $productoEncontrado) {
-        $socioEncontrado->alquilar($productoEncontrado); 
-    } else {
-        if (!$socioEncontrado) {
-            echo "Socio con número $numeroCliente no encontrado.<br>";
         }
-        if (!$productoEncontrado) {
-            echo "Producto con número $numeroSoporte no encontrado.<br>";
+
+        if (!$socio) {
+            $this->log->warning("Cliente no encontrado: {$numeroCliente}");
+            throw new ClienteNoEncontradoException("Cliente con número {$numeroCliente} no encontrado");
         }
+        if (!$producto) {
+            $this->log->warning("Producto no encontrado: {$numeroSoporte}");
+            throw new SoporteNoEncontradoException("Producto con número {$numeroSoporte} no encontrado");
+        }
+
+        try {
+            $socio->alquilar($producto);
+            $this->log->info("Alquiler realizado: Cliente {$socio->getNombre()} - Producto {$producto->getTitulo()}");
+        } catch (SoporteYaAlquiladoException | CupoSuperadoException $e) {
+            $this->log->warning("Error al alquilar: {$e->getMessage()}");
+            throw $e;
+        }
+
+        return $this;
     }
 
+    public function devolverSocioProducto(int $numeroCliente, int $numeroSoporte): Videoclub
+    {
+        $socio = null;
+        foreach ($this->socios as $c) {
+            if ($c->getNumero() === $numeroCliente) {
+                $socio = $c;
+                break;
+            }
+        }
 
-    return $this;
+        $producto = null;
+        foreach ($this->productos as $p) {
+            if ($p->getNumero() === $numeroSoporte) {
+                $producto = $p;
+                break;
+            }
+        }
 
+        if (!$socio) {
+            $this->log->warning("Cliente no encontrado al devolver: {$numeroCliente}");
+            throw new ClienteNoEncontradoException("Cliente con número {$numeroCliente} no encontrado");
+        }
+        if (!$producto) {
+            $this->log->warning("Producto no encontrado al devolver: {$numeroSoporte}");
+            throw new SoporteNoEncontradoException("Producto con número {$numeroSoporte} no encontrado");
+        }
+
+        try {
+            $socio->devolver($numeroSoporte);
+            $producto->alquilado = false;
+            $this->log->info("Devolución realizada: Cliente {$socio->getNombre()} - Producto {$producto->getTitulo()}");
+        } catch (SoporteNoEncontradoException $e) {
+            $this->log->warning("Error al devolver: {$e->getMessage()}");
+            throw $e;
+        }
+
+        return $this;
     }
-
 }
-?>
