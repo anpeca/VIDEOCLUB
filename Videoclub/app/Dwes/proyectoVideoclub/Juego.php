@@ -42,7 +42,8 @@ class Juego extends Soporte {
     }
 
     public function muestraResumen(): string {
-        return parent::muestraResumen() . " Consola: " . $this->consola . " Jugadores: " . $this->muestraJugadoresPosibles();
+        return parent::muestraResumen() . " Consola: " . $this->consola . " Jugadores: 1this->minJugadores
+        <->1this->maxJugadores</->";
     }
 
     public function __toString(): string {
