@@ -8,11 +8,7 @@ use Dwes\ProyectoVideoclub\Videoclub;
 use Dwes\ProyectoVideoclub\Cliente;
 use Dwes\ProyectoVideoclub\Soporte;
 use Dwes\ProyectoVideoclub\CintaVideo;
-use Dwes\ProyectoVideoclub\Util\ClienteNoEncontradoException;
-use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
-use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
-use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
-use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException as SoporteNoEncontradoEx; // alias si hace falta
+use Dwes\ProyectoVideoclub\Exception\ClienteNoExisteException as ClienteNoEncontradoException; use Dwes\ProyectoVideoclub\Exception\SoporteNoEncontradoException; use Dwes\ProyectoVideoclub\Exception\SoporteYaAlquiladoException; use Dwes\ProyectoVideoclub\Exception\CupoSuperadoException;
 
 class VideoclubTest extends TestCase
 {

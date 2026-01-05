@@ -7,18 +7,37 @@ namespace Dwes\Monologos\Tests;
 use PHPUnit\Framework\TestCase;
 use Dwes\Monologos\HolaMonolog;
 
+/**
+ * Pruebas unitarias para HolaMonolog.
+ *
+ * Verifican comportamiento de saludo y despedida según la hora,
+ * validación de rangos de hora, y almacenamiento de los últimos saludos.
+ */
 class HolaMonologTest extends TestCase
 {
+    /**
+     * Crea un mock de Logger compatible con PSR-3.
+     *
+     * Se configura para aceptar llamadas a info() y warning() ya que
+     * la clase HolaMonolog registra eventos en esos niveles.
+     *
+     * @return \Psr\Log\LoggerInterface Mock del logger
+     */
     private function createLoggerMock()
     {
         $logger = $this->createMock(\Psr\Log\LoggerInterface::class);
+        // Permitimos llamadas a info() sin restricciones
         $logger->expects($this->any())->method('info');
-        // No es obligatorio que exista 'warning' ahora que lanzamos excepción en constructor,
-        // pero lo dejamos para compatibilidad con implementaciones previas.
+        // Permitimos llamadas a warning() sin restricciones (compatibilidad)
         $logger->expects($this->any())->method('warning');
         return $logger;
     }
 
+    /**
+     * Comprueba saludo y despedida para la franja de mañana.
+     *
+     * Hora 8 debe devolver "Buenos días" y despedida "Hasta luego".
+     */
     public function testSaludoManana(): void
     {
         $logger = $this->createLoggerMock();
@@ -27,6 +46,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Hasta luego', $h->despedir());
     }
 
+    /**
+     * Comprueba saludo y despedida para la franja de tarde.
+     *
+     * Hora 15 debe devolver "Buenas tardes" y despedida "Hasta la tarde".
+     */
     public function testSaludoTarde(): void
     {
         $logger = $this->createLoggerMock();
@@ -35,6 +59,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Hasta la tarde', $h->despedir());
     }
 
+    /**
+     * Comprueba saludo y despedida para la franja de noche.
+     *
+     * Hora 22 debe devolver "Buenas noches" y despedida "Hasta mañana".
+     */
     public function testSaludoNoche(): void
     {
         $logger = $this->createLoggerMock();
@@ -43,6 +72,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Hasta mañana', $h->despedir());
     }
 
+    /**
+     * Límite inferior de la franja de mañana.
+     *
+     * Hora 6 se considera inicio de "Buenos días".
+     */
     public function testLimiteInicioManana(): void
     {
         $logger = $this->createLoggerMock();
@@ -50,6 +84,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Buenos días', $h->saludar());
     }
 
+    /**
+     * Límite superior de la franja de mañana.
+     *
+     * Hora 11 sigue perteneciendo a "Buenos días".
+     */
     public function testLimiteFinManana(): void
     {
         $logger = $this->createLoggerMock();
@@ -57,6 +96,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Buenos días', $h->saludar());
     }
 
+    /**
+     * Límite inicio de la franja de tarde.
+     *
+     * Hora 12 debe devolver "Buenas tardes".
+     */
     public function testLimiteInicioTarde(): void
     {
         $logger = $this->createLoggerMock();
@@ -64,6 +108,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Buenas tardes', $h->saludar());
     }
 
+    /**
+     * Límite fin de la franja de tarde.
+     *
+     * Hora 19 sigue perteneciendo a "Buenas tardes".
+     */
     public function testLimiteFinTarde(): void
     {
         $logger = $this->createLoggerMock();
@@ -71,6 +120,11 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Buenas tardes', $h->saludar());
     }
 
+    /**
+     * Límite inicio de la franja de noche.
+     *
+     * Hora 20 debe devolver "Buenas noches".
+     */
     public function testLimiteInicioNoche(): void
     {
         $logger = $this->createLoggerMock();
@@ -78,18 +132,30 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Buenas noches', $h->saludar());
     }
 
+    /**
+     * Validación: hora negativa debe lanzar InvalidArgumentException.
+     */
     public function testHoraNegativaLanzaInvalidArgumentException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new HolaMonolog(-1, $this->createLoggerMock());
     }
 
+    /**
+     * Validación: hora mayor de 24 debe lanzar InvalidArgumentException.
+     */
     public function testHoraMayorDe24LanzaInvalidArgumentException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new HolaMonolog(30, $this->createLoggerMock());
     }
 
+    /**
+     * Comprueba que se almacenan menos de tres saludos correctamente.
+     *
+     * Se realizan dos saludos con horas distintas y se verifica el orden:
+     * el más reciente debe aparecer en la posición 0 del array devuelto.
+     */
     public function testAlmacenaMenosDeTresSaludos(): void
     {
         $logger = $this->createLoggerMock();
@@ -104,6 +170,12 @@ class HolaMonologTest extends TestCase
         $this->assertSame('Buenos días', $ultimos[1]);
     }
 
+    /**
+     * Comprueba que solo se mantienen los últimos tres saludos y en orden correcto.
+     *
+     * Se realizan cuatro saludos; el más antiguo debe descartarse y los tres
+     * más recientes deben aparecer en orden desde el más reciente al más antiguo.
+     */
     public function testAlmacenaUltimosTresSaludos(): void
     {
         $logger = $this->createLoggerMock();
@@ -127,6 +199,9 @@ class HolaMonologTest extends TestCase
     }
 
     /**
+     * Prueba parametrizada que ejecuta secuencias de horas y compara
+     * el resultado con el array esperado de últimos saludos.
+     *
      * @dataProvider providerSaludos
      */
     public function testProviderUltimosSaludos(array $horas, array $esperado): void
@@ -142,9 +217,16 @@ class HolaMonologTest extends TestCase
             $h->saludar();
         }
 
+        // Comparar el array completo de últimos saludos con el esperado
         $this->assertSame($esperado, $h->getUltimosSaludos());
     }
 
+    /**
+     * Proveedor de datos para testProviderUltimosSaludos.
+     *
+     * Cada caso contiene un array de horas a aplicar y el array esperado
+     * de últimos saludos (más reciente primero).
+     */
     public function providerSaludos(): array
     {
         return [

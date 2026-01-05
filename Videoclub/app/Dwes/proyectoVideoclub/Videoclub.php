@@ -2,24 +2,53 @@
 
 namespace Dwes\ProyectoVideoclub;
 
-use Dwes\ProyectoVideoclub\Util\ClienteNoEncontradoException;
-use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
-use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
-use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
+use Dwes\ProyectoVideoclub\Exception\ClienteNoExisteException;
+use Dwes\ProyectoVideoclub\Exception\SoporteNoEncontradoException;
+use Dwes\ProyectoVideoclub\Exception\SoporteYaAlquiladoException;
+use Dwes\ProyectoVideoclub\Exception\CupoSuperadoException;
+
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Exception;
 use Dwes\ProyectoVideoclub\Util\LogFactory;
 
+/**
+ * Clase principal que representa un videoclub.
+ *
+ * - Mantiene listas internas de productos (Soporte) y socios (Cliente).
+ * - Proporciona métodos para incluir productos y socios, listar elementos,
+ *   y operaciones de alquiler/devolución delegando en Cliente y Soporte.
+ * - Registra eventos relevantes mediante un logger obtenido de LogFactory.
+ *
+ * Nota: el código funcional original se conserva tal cual; los comentarios
+ * internos explican responsabilidades y puntos clave de la implementación.
+ */
 class Videoclub
 {
+    /** Nombre del videoclub */
     private string $nombre;
+
+    /** Array de productos (instancias de Soporte) */
     private array $productos = [];
+
+    /** Contador de productos incluidos (se usa para asignar números) */
     private int $numProductos = 0;
+
+    /** Array de socios (instancias de Cliente) */
     private array $socios = [];
+
+    /** Contador de socios incluidos */
     private int $numSocios = 0;
+
+    /** Logger para registrar eventos del videoclub */
     private Logger $log;
 
+    /**
+     * Constructor.
+     *
+     * Inicializa el nombre y configura el logger mediante LogFactory.
+     */
     public function __construct(string $nombre)
     {
         $this->nombre = $nombre;
@@ -38,6 +67,11 @@ class Videoclub
         // $this->log->debug("Videoclub '{$this->nombre}' creado.");
     }
 
+    /**
+     * Registra en el log el resumen de cada producto.
+     *
+     * Usa muestraResumen() si está disponible en el objeto producto.
+     */
     public function listarProductos(): void
     {
         foreach ($this->productos as $producto) {
@@ -47,6 +81,11 @@ class Videoclub
         }
     }
 
+    /**
+     * Registra en el log el resumen de cada socio.
+     *
+     * Usa muestraResumen() si está disponible en el objeto socio.
+     */
     public function listarSocios(): void
     {
         foreach ($this->socios as $socio) {
@@ -56,6 +95,11 @@ class Videoclub
         }
     }
 
+    /**
+     * Añade un producto (Soporte) al inventario interno.
+     *
+     * Incrementa el contador de productos y registra la inclusión en el log.
+     */
     private function incluirProducto(Soporte $s): void
     {
         $this->productos[] = $s;
@@ -63,6 +107,11 @@ class Videoclub
         $this->log->debug("Producto incluido: " . (method_exists($s, 'getTitulo') ? $s->getTitulo() : 'desconocido'));
     }
 
+    /**
+     * Añade un socio (Cliente) al videoclub.
+     *
+     * Devuelve $this para permitir encadenado en llamadas de inclusión.
+     */
     public function incluirSocio(Cliente $c): Videoclub
     {
         $this->socios[] = $c;
@@ -74,11 +123,9 @@ class Videoclub
     /**
      * Incluir una cinta de vídeo.
      *
-     * @param string|null $metacriticUrl URL de Metacritic asociada al soporte (puede ser null)
-     * @param string $titulo
-     * @param float $precio
-     * @param int $duracion
-     * @return Videoclub
+     * - Crea una instancia de CintaVideo con número secuencial.
+     * - Si se proporciona URL de Metacritic, la asigna mediante setMetacritic().
+     * - Añade el producto al inventario interno.
      */
     public function incluirCintaVideo(?string $metacriticUrl, string $titulo, float $precio, int $duracion): Videoclub
     {
@@ -94,12 +141,8 @@ class Videoclub
     /**
      * Incluir un DVD.
      *
-     * @param string|null $metacriticUrl URL de Metacritic asociada al soporte (puede ser null)
-     * @param string $titulo
-     * @param float $precio
-     * @param string $idiomas
-     * @param string $pantalla
-     * @return Videoclub
+     * - Crea una instancia de Dvd con número secuencial.
+     * - Asigna Metacritic si se proporciona y añade el producto.
      */
     public function incluirDvd(?string $metacriticUrl, string $titulo, float $precio, string $idiomas, string $pantalla): Videoclub
     {
@@ -114,13 +157,8 @@ class Videoclub
     /**
      * Incluir un juego.
      *
-     * @param string|null $metacriticUrl URL de Metacritic asociada al soporte (puede ser null)
-     * @param string $titulo
-     * @param float $precio
-     * @param string $consola
-     * @param int $minJ
-     * @param int $maxJ
-     * @return Videoclub
+     * - Crea una instancia de Juego con número secuencial.
+     * - Asigna Metacritic si se proporciona y añade el producto.
      */
     public function incluirJuego(?string $metacriticUrl, string $titulo, float $precio, string $consola, int $minJ, int $maxJ): Videoclub
     {
@@ -132,6 +170,19 @@ class Videoclub
         return $this;
     }
 
+    /**
+     * Alquila un producto a un socio identificado por sus números.
+     *
+     * - Busca el socio y el producto por número.
+     * - Lanza ClienteNoExisteException o SoporteNoEncontradoException si no existen.
+     * - Delegar la lógica de alquiler al método alquilar() del Cliente.
+     * - Captura y re-lanza excepciones específicas de negocio para logging.
+     *
+     * @throws ClienteNoExisteException
+     * @throws SoporteNoEncontradoException
+     * @throws SoporteYaAlquiladoException
+     * @throws CupoSuperadoException
+     */
     public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): Videoclub
     {
         $socio = null;
@@ -152,7 +203,7 @@ class Videoclub
 
         if (!$socio) {
             $this->log->warning("Cliente no encontrado: {$numeroCliente}");
-            throw new ClienteNoEncontradoException("Cliente con número {$numeroCliente} no encontrado");
+            throw new ClienteNoExisteException("Cliente con número {$numeroCliente} no encontrado");
         }
         if (!$producto) {
             $this->log->warning("Producto no encontrado: {$numeroSoporte}");
@@ -170,6 +221,16 @@ class Videoclub
         return $this;
     }
 
+    /**
+     * Devuelve un producto de un socio.
+     *
+     * - Busca socio y producto por número.
+     * - Llama a devolver() del Cliente y marca el producto como no alquilado.
+     * - Maneja SoporteNoEncontradoException lanzada por el cliente.
+     *
+     * @throws ClienteNoExisteException
+     * @throws SoporteNoEncontradoException
+     */
     public function devolverSocioProducto(int $numeroCliente, int $numeroSoporte): Videoclub
     {
         $socio = null;
@@ -190,7 +251,7 @@ class Videoclub
 
         if (!$socio) {
             $this->log->warning("Cliente no encontrado al devolver: {$numeroCliente}");
-            throw new ClienteNoEncontradoException("Cliente con número {$numeroCliente} no encontrado");
+            throw new ClienteNoExisteException("Cliente con número {$numeroCliente} no encontrado");
         }
         if (!$producto) {
             $this->log->warning("Producto no encontrado al devolver: {$numeroSoporte}");
@@ -199,7 +260,7 @@ class Videoclub
 
         try {
             $socio->devolver($numeroSoporte);
-            $producto->alquilado = false;
+            $producto->setAlquilado(false);
             $this->log->info("Devolución realizada: Cliente {$socio->getNombre()} - Producto {$producto->getTitulo()}");
         } catch (SoporteNoEncontradoException $e) {
             $this->log->warning("Error al devolver: {$e->getMessage()}");
@@ -212,8 +273,7 @@ class Videoclub
     /**
      * Devuelve el objeto Cliente con el número indicado o null si no existe.
      *
-     * @param int $numero
-     * @return Cliente|null
+     * Útil para consultas directas desde código o tests.
      */
     public function obtenerSocioPorNumero(int $numero): ?Cliente
     {
@@ -226,8 +286,9 @@ class Videoclub
     }
 
     /**
-     * Compatibilidad con tests: firma simple que usan los tests.
-     * Ajusta parámetros si tus tests usan otro orden/tipos.
+     * Método de compatibilidad con tests que esperan la firma alquilar($cliente, $producto, $soporte).
+     *
+     * Reutiliza la lógica interna existente delegando en alquilarSocioProducto.
      */
     public function alquilar(int $numeroCliente, int $numeroProducto, int $numeroSoporte): void
     {
@@ -236,7 +297,9 @@ class Videoclub
     }
 
     /**
-     * Compatibilidad con tests: firma simple que usan los tests.
+     * Método de compatibilidad con tests que esperan la firma devolver($cliente, $producto, $soporte).
+     *
+     * Reutiliza la lógica interna existente delegando en devolverSocioProducto.
      */
     public function devolver(int $numeroCliente, int $numeroProducto, int $numeroSoporte): void
     {

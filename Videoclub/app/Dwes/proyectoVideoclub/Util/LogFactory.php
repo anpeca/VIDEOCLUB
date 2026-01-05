@@ -1,12 +1,14 @@
 <?php
+
 namespace Dwes\ProyectoVideoclub\Util;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
 
-class LogFactory{
-/**
+class LogFactory
+{
+    /**
      * Crea un logger de Monolog con ruta segura y nivel DEBUG
      *
      * @param string $name Nombre del logger
@@ -15,7 +17,7 @@ class LogFactory{
      */
 
 
-   public static function crearLogger(string $nombre, ?string $logFile = null): LoggerInterface
+    public static function crearLogger(string $nombre, ?string $logFile = null): LoggerInterface
     {
         if ($logFile === null) {
             $logFile = 'videoclub.log';
@@ -33,8 +35,4 @@ class LogFactory{
 
         return $logger;
     }
-
-
 }
-
-?>

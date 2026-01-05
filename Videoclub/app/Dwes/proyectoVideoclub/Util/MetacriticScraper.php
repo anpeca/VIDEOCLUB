@@ -1,4 +1,5 @@
 <?php
+
 namespace Dwes\ProyectoVideoclub\Util;
 
 /**

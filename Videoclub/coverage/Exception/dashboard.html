@@ -2,7 +2,7 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8">
-  <title>Dashboard for /opt/lampp/htdocs/SERVIDOR/VIDEOCLUB/Videoclub/app/Dwes/proyectoVideoclub/Util</title>
+  <title>Dashboard for /opt/lampp/htdocs/SERVIDOR/VIDEOCLUB/Videoclub/app/Dwes/proyectoVideoclub/Exception</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../_css/bootstrap.min.css?v=9.2.32" rel="stylesheet" type="text/css">
   <link href="../_css/nv.d3.min.css?v=9.2.32" rel="stylesheet" type="text/css">
@@ -17,7 +17,7 @@
       <nav aria-label="breadcrumb">
        <ol class="breadcrumb">
          <li class="breadcrumb-item"><a href="../index.html">/opt/lampp/htdocs/SERVIDOR/VIDEOCLUB/Videoclub/app/Dwes/proyectoVideoclub</a></li>
-         <li class="breadcrumb-item"><a href="index.html">Util</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Exception</a></li>
          <li class="breadcrumb-item active">(Dashboard)</li>
 
        </ol>
@@ -58,8 +58,6 @@
         </tr>
        </thead>
        <tbody>
-       <tr><td><a href="MetacriticScraper.php.html#8">Dwes\ProyectoVideoclub\Util\MetacriticScraper</a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="LogFactory.php.html#8">Dwes\ProyectoVideoclub\Util\LogFactory</a></td><td class="text-right">75%</td></tr>
 
        </tbody>
       </table>
@@ -76,8 +74,6 @@
         </tr>
        </thead>
        <tbody>
-       <tr><td><a href="MetacriticScraper.php.html#8">Dwes\ProyectoVideoclub\Util\MetacriticScraper</a></td><td class="text-right">132</td></tr>
-       <tr><td><a href="LogFactory.php.html#8">Dwes\ProyectoVideoclub\Util\LogFactory</a></td><td class="text-right">3</td></tr>
 
        </tbody>
       </table>
@@ -115,8 +111,6 @@
         </tr>
        </thead>
        <tbody>
-       <tr><td><a href="MetacriticScraper.php.html#16"><abbr title="Dwes\ProyectoVideoclub\Util\MetacriticScraper::obtenerPuntuacion">obtenerPuntuacion</abbr></a></td><td class="text-right">0%</td></tr>
-       <tr><td><a href="LogFactory.php.html#18"><abbr title="Dwes\ProyectoVideoclub\Util\LogFactory::crearLogger">crearLogger</abbr></a></td><td class="text-right">75%</td></tr>
 
        </tbody>
       </table>
@@ -133,8 +127,6 @@
         </tr>
        </thead>
        <tbody>
-       <tr><td><a href="MetacriticScraper.php.html#16"><abbr title="Dwes\ProyectoVideoclub\Util\MetacriticScraper::obtenerPuntuacion">obtenerPuntuacion</abbr></a></td><td class="text-right">132</td></tr>
-       <tr><td><a href="LogFactory.php.html#18"><abbr title="Dwes\ProyectoVideoclub\Util\LogFactory::crearLogger">crearLogger</abbr></a></td><td class="text-right">3</td></tr>
 
        </tbody>
       </table>
@@ -163,7 +155,7 @@ $(document).ready(function() {
       .yAxis.tickFormat(d3.format('d'));
 
     d3.select('#classCoverageDistribution svg')
-      .datum(getCoverageDistributionData([1,0,0,0,0,0,0,0,1,0,0,2], "Class Coverage"))
+      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,0,0,0,0,4], "Class Coverage"))
       .transition().duration(500).call(chart);
 
     nv.utils.windowResize(chart.update);
@@ -181,7 +173,7 @@ $(document).ready(function() {
       .yAxis.tickFormat(d3.format('d'));
 
     d3.select('#methodCoverageDistribution svg')
-      .datum(getCoverageDistributionData([1,0,0,0,0,0,0,0,1,0,0,0], "Method Coverage"))
+      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,0,0,0,0,0], "Method Coverage"))
       .transition().duration(500).call(chart);
 
     nv.utils.windowResize(chart.update);
@@ -231,7 +223,7 @@ $(document).ready(function() {
     chart.yAxis.axisLabel('Cyclomatic Complexity');
 
     d3.select('#classComplexity svg')
-      .datum(getComplexityData([[100,0,"<a href=\"ClienteNoEncontradoException.php.html#4\">Dwes\\ProyectoVideoclub\\Util\\ClienteNoEncontradoException<\/a>"],[75,3,"<a href=\"LogFactory.php.html#8\">Dwes\\ProyectoVideoclub\\Util\\LogFactory<\/a>"],[0,11,"<a href=\"MetacriticScraper.php.html#8\">Dwes\\ProyectoVideoclub\\Util\\MetacriticScraper<\/a>"],[100,0,"<a href=\"VideoclubException.php.html#4\">Dwes\\ProyectoVideoclub\\Util\\VideoclubException<\/a>"]], 'Class Complexity'))
+      .datum(getComplexityData([[100,0,"<a href=\"ClienteNoExisteException.php.html#6\">Dwes\\ProyectoVideoclub\\Exception\\ClienteNoExisteException<\/a>"],[100,0,"<a href=\"CupoSuperadoException.php.html#6\">Dwes\\ProyectoVideoclub\\Exception\\CupoSuperadoException<\/a>"],[100,0,"<a href=\"SoporteNoEncontradoException.php.html#6\">Dwes\\ProyectoVideoclub\\Exception\\SoporteNoEncontradoException<\/a>"],[100,0,"<a href=\"SoporteYaAlquiladoException.php.html#6\">Dwes\\ProyectoVideoclub\\Exception\\SoporteYaAlquiladoException<\/a>"]], 'Class Complexity'))
       .transition()
       .duration(500)
       .call(chart);
@@ -255,7 +247,7 @@ $(document).ready(function() {
     chart.yAxis.axisLabel('Method Complexity');
 
     d3.select('#methodComplexity svg')
-      .datum(getComplexityData([[75,3,"<a href=\"LogFactory.php.html#18\">Dwes\\ProyectoVideoclub\\Util\\LogFactory::crearLogger<\/a>"],[0,11,"<a href=\"MetacriticScraper.php.html#16\">Dwes\\ProyectoVideoclub\\Util\\MetacriticScraper::obtenerPuntuacion<\/a>"]], 'Method Complexity'))
+      .datum(getComplexityData([], 'Method Complexity'))
       .transition()
       .duration(500)
       .call(chart);
