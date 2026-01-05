@@ -34,17 +34,6 @@ class Cliente
 
         $this->log = LogFactory::crearLogger('ClienteLogger', 'cliente.log');
         $this->log->debug('Cliente creado: '. $this->nombre);
-
-
-        // Configurar Monolog
-        // $logDir = __DIR__ . '/../../logs';
-        // if (!is_dir($logDir)) {
-        //     mkdir($logDir, 0777, true);
-        // }
-        // $this->log = new Logger('VideoclubLogger');
-        // $this->log->pushHandler(new StreamHandler($logDir . '/videoclub.log', Logger::DEBUG));
-
-        // $this->log->debug("Cliente creado: {$this->nombre}");
     }
 
     public function getNumero(): int
@@ -142,6 +131,8 @@ class Cliente
                 $soporte->alquilado = false;
                 unset($this->soportesAlquilados[$key]);
                 $this->soportesAlquilados = array_values($this->soportesAlquilados);
+                // Decrementar contador de soportes alquilados
+                $this->numSoportesAlquilados = max(0, $this->numSoportesAlquilados - 1);
                 $this->log->info("Devolución realizada", [
                     'cliente' => $this->nombre,
                     'soporte_numero' => $numSoporte
@@ -162,10 +153,14 @@ class Cliente
         foreach ($this->soportesAlquilados as $soporte) {
             $linea = method_exists($soporte, 'muestraResumen') ? $soporte->muestraResumen() : json_encode($soporte);
             $this->log->info($linea);
-            // echo $linea . "<br>"; // opcional para depuración
         }
     }
 
+    /**
+     * Devuelve el array de soportes actualmente alquilados por el cliente.
+     *
+     * @return Soporte[] Array de objetos Soporte
+     */
     public function getAlquileres(): array
     {
         return $this->soportesAlquilados;

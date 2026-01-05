@@ -1,5 +1,6 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
+use Dwes\ProyectoVideoclub\Util\MetacriticScraper;
 
 // require_once "Soporte.php";
 class CintaVideo extends Soporte {
@@ -18,5 +19,7 @@ class CintaVideo extends Soporte {
     public function muestraResumen(): string {
         return parent::muestraResumen() . " Duración: " . $this->duracion . " minutos";
     }
+
+    public function getPuntuacion(): ?float { $url = $this->getMetacritic(); if ($url === null) return null; return MetacriticScraper::obtenerPuntuacion($url); }
 }
 ?>

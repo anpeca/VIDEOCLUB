@@ -1,4 +1,5 @@
 <?php
+
 namespace Dwes\ProyectoVideoclub;
 
 use Dwes\ProyectoVideoclub\Util\ClienteNoEncontradoException;
@@ -23,12 +24,9 @@ class Videoclub
     {
         $this->nombre = $nombre;
 
+        $this->log = LogFactory::crearLogger('VideoclubLogger', 'videoclub.log'); $this->log->debug("Videoclub '{$this->nombre}' creado.");
 
-        $this->log = LogFactory::crearLogger('VideoclubLogger', 'videoclub.log');
-        $this->log->debug("Videoclub '{$this->nombre}' creado.");
-
-
-        // // Configurar Monolog
+        // Configurar Monolog
         // $logDir = __DIR__ . '/../../logs';
         // if (!is_dir($logDir)) {
         //     mkdir($logDir, 0777, true);
@@ -72,23 +70,63 @@ class Videoclub
         return $this;
     }
 
-    public function incluirCintaVideo(string $titulo, float $precio, int $duracion): Videoclub
+    /**
+     * Incluir una cinta de vídeo.
+     *
+     * @param string|null $metacriticUrl URL de Metacritic asociada al soporte (puede ser null)
+     * @param string $titulo
+     * @param float $precio
+     * @param int $duracion
+     * @return Videoclub
+     */
+    public function incluirCintaVideo(?string $metacriticUrl, string $titulo, float $precio, int $duracion): Videoclub
     {
         $cintaVideo = new CintaVideo($titulo, $this->numProductos + 1, $precio, $duracion);
+        // Asignar metacritic si se proporciona
+        if (method_exists($cintaVideo, 'setMetacritic')) {
+            $cintaVideo->setMetacritic($metacriticUrl);
+        }
         $this->incluirProducto($cintaVideo);
         return $this;
     }
 
-    public function incluirDvd(string $titulo, float $precio, string $idiomas, string $pantalla): Videoclub
+    /**
+     * Incluir un DVD.
+     *
+     * @param string|null $metacriticUrl URL de Metacritic asociada al soporte (puede ser null)
+     * @param string $titulo
+     * @param float $precio
+     * @param string $idiomas
+     * @param string $pantalla
+     * @return Videoclub
+     */
+    public function incluirDvd(?string $metacriticUrl, string $titulo, float $precio, string $idiomas, string $pantalla): Videoclub
     {
         $dvd = new Dvd($titulo, $this->numProductos + 1, $precio, $idiomas, $pantalla);
+        if (method_exists($dvd, 'setMetacritic')) {
+            $dvd->setMetacritic($metacriticUrl);
+        }
         $this->incluirProducto($dvd);
         return $this;
     }
 
-    public function incluirJuego(string $titulo, float $precio, string $consola, int $minJ, int $maxJ): Videoclub
+    /**
+     * Incluir un juego.
+     *
+     * @param string|null $metacriticUrl URL de Metacritic asociada al soporte (puede ser null)
+     * @param string $titulo
+     * @param float $precio
+     * @param string $consola
+     * @param int $minJ
+     * @param int $maxJ
+     * @return Videoclub
+     */
+    public function incluirJuego(?string $metacriticUrl, string $titulo, float $precio, string $consola, int $minJ, int $maxJ): Videoclub
     {
         $juego = new Juego($titulo, $this->numProductos + 1, $precio, $consola, $minJ, $maxJ);
+        if (method_exists($juego, 'setMetacritic')) {
+            $juego->setMetacritic($metacriticUrl);
+        }
         $this->incluirProducto($juego);
         return $this;
     }
@@ -168,5 +206,21 @@ class Videoclub
         }
 
         return $this;
+    }
+
+    /**
+     * Devuelve el objeto Cliente con el número indicado o null si no existe.
+     *
+     * @param int $numero
+     * @return Cliente|null
+     */
+    public function obtenerSocioPorNumero(int $numero): ?Cliente
+    {
+        foreach ($this->socios as $socio) {
+            if ($socio->getNumero() === $numero) {
+                return $socio;
+            }
+        }
+        return null;
     }
 }

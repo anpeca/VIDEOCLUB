@@ -1,5 +1,6 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
+use Dwes\ProyectoVideoclub\Util\MetacriticScraper;
 
 // require_once "Soporte.php";
 
@@ -49,5 +50,7 @@ class Juego extends Soporte {
     public function __toString(): string {
         return "Consola: " . $this->consola . " Jugadores: " . $this->muestraJugadoresPosibles();
     }
+
+    public function getPuntuacion(): ?float { $url = $this->getMetacritic(); if ($url === null) return null; return MetacriticScraper::obtenerPuntuacion($url); }
 }
 ?>

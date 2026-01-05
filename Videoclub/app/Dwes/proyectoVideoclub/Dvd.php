@@ -1,5 +1,6 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
+use Dwes\ProyectoVideoclub\Util\MetacriticScraper;
 
 // require_once "Soporte.php";
 
@@ -21,4 +22,7 @@ class Dvd extends Soporte
     {
         return parent::muestraResumen() . " Idiomas: {$this->idiomas}, Formato: {$this->formatoPantalla}";
     }
+
+    public function getPuntuacion(): ?float { $url = $this->getMetacritic(); if ($url === null) return null; return MetacriticScraper::obtenerPuntuacion($url); }
 }
+?>
