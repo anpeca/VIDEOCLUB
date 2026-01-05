@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1767642949">
-  <project timestamp="1767642949">
+<coverage generated="1767643080">
+  <project timestamp="1767643080">
     <file name="/opt/lampp/htdocs/SERVIDOR/VIDEOCLUB/Videoclub/app/Dwes/proyectoVideoclub/CintaVideo.php">
       <class name="Dwes\ProyectoVideoclub\CintaVideo" namespace="global">
         <metrics complexity="5" methods="4" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="3" elements="9" coveredelements="5"/>

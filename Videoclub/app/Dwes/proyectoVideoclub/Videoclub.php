@@ -24,7 +24,8 @@ class Videoclub
     {
         $this->nombre = $nombre;
 
-        $this->log = LogFactory::crearLogger('VideoclubLogger', 'videoclub.log'); $this->log->debug("Videoclub '{$this->nombre}' creado.");
+        $this->log = LogFactory::crearLogger('VideoclubLogger', 'videoclub.log');
+        $this->log->debug("Videoclub '{$this->nombre}' creado.");
 
         // Configurar Monolog
         // $logDir = __DIR__ . '/../../logs';
@@ -222,5 +223,23 @@ class Videoclub
             }
         }
         return null;
+    }
+
+    /**
+     * Compatibilidad con tests: firma simple que usan los tests.
+     * Ajusta parámetros si tus tests usan otro orden/tipos.
+     */
+    public function alquilar(int $numeroCliente, int $numeroProducto, int $numeroSoporte): void
+    {
+        // Reutilizamos la lógica existente: el método interno usa cliente y soporte por número.
+        $this->alquilarSocioProducto($numeroCliente, $numeroSoporte);
+    }
+
+    /**
+     * Compatibilidad con tests: firma simple que usan los tests.
+     */
+    public function devolver(int $numeroCliente, int $numeroProducto, int $numeroSoporte): void
+    {
+        $this->devolverSocioProducto($numeroCliente, $numeroSoporte);
     }
 }
