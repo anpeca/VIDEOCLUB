@@ -1,11 +1,12 @@
 <?php
 // require_once "app/Dwes/proyectoVideoclub/Videoclub.php";
 // require_once "app/Dwes/proyectoVideoclub/Cliente.php";
-require_once "autoload.php";
+
+require_once __DIR__ . '/vendor/autoload.php';
 use Dwes\ProyectoVideoclub\Videoclub;
 use Dwes\ProyectoVideoclub\Cliente;
 
-$vc = new Videoclub("Severo 8A",[],0,[],0); 
+$vc = new Videoclub("Severo 8A");
 
 // voy a incluir unos cuantos soportes de prueba
 // Primer parámetro: URL de Metacritic (string) o null si no la hay
