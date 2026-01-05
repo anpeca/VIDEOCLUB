@@ -7,6 +7,8 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\IntrospectionProcessor;
 
+
+
 /**
  * Clase de ejemplo que demuestra el uso de Monolog para registrar mensajes
  * en función de una hora recibida. Configura distintos handlers y processors
@@ -79,9 +81,9 @@ class HolaMonolog
      * - 12:00–19:59 → "Buenas tardes"
      * - 20:00–05:59 → "Buenas noches"
      *
-     * @return void
+     * @return string Mensaje de saludo
      */
-    public function saludar(): void
+    public function saludar(): string
     {
         if ($this->hora >= 6 && $this->hora < 12) {
             $mensaje = 'Buenos días';
@@ -92,6 +94,7 @@ class HolaMonolog
         }
 
         $this->miLog->info($mensaje);
+        return $mensaje;
     }
 
     /**
@@ -101,9 +104,9 @@ class HolaMonolog
      * - 12:00–19:59 → "Hasta la tarde"
      * - 20:00–23:59 → "Hasta mañana"
      *
-     * @return void
+     * @return string Mensaje de despedida
      */
-    public function despedir(): void
+    public function despedir(): string
     {
         if ($this->hora < 12) {
             $mensaje = 'Hasta luego';
@@ -114,5 +117,6 @@ class HolaMonolog
         }
 
         $this->miLog->info($mensaje);
+        return $mensaje;
     }
 }

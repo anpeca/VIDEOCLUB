@@ -1,0 +1,11 @@
+/Videoclub/vendor/bin/
+/Videoclub/vendor/composer/
+/Videoclub/vendor/doctrine/
+/Videoclub/vendor/monolog/
+/Videoclub/vendor/myclabs/
+/Videoclub/vendor/nikic/
+/Videoclub/vendor/phar-io/
+/Videoclub/vendor/phpunit/
+/Videoclub/vendor/psr/
+/Videoclub/vendor/sebastian/
+/Videoclub/vendor/theseer/
