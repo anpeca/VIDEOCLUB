@@ -1,45 +1,90 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
 
+use Dwes\ProyectoVideoclub\Util\MetacriticScraper;
+
 /**
- * Clase Dvd
+ * Representa un DVD como tipo de Soporte.
  *
- * Representa un soporte de tipo DVD dentro del sistema del videoclub.
- * Hereda de la clase Soporte y añade propiedades específicas como idiomas disponibles
- * y formato de pantalla.
+ * - Contiene información sobre idiomas, formato de pantalla y duración en minutos.
+ * - Proporciona un resumen textual que incluye estos datos y delega en la clase base
+ *   para la parte común del resumen.
+ * - Permite obtener una puntuación externa mediante Metacritic si se ha proporcionado
+ *   una URL en la propiedad metacritic heredada.
  */
 class Dvd extends Soporte
 {
-    /** @var string Idiomas disponibles en el DVD (separados por comas) */
+    /** Idiomas disponibles en el DVD (por ejemplo "ES,EN") */
     public string $idiomas;
 
-    /** @var string Formato de pantalla del DVD (por ejemplo, 16:9) */
+    /** Formato de pantalla (por ejemplo "16:9") */
     private string $formatoPantalla;
 
+    /** Duración en minutos */
+    private int $duracion;
+
     /**
-     * Constructor de Dvd
+     * Constructor.
      *
-     * @param string $titulo Título del DVD
-     * @param int $numero Número identificador del soporte
-     * @param float $precio Precio base del DVD
-     * @param string $idiomas Idiomas disponibles (ej: "es,en,fr")
-     * @param string $formatoPantalla Formato de pantalla (ej: "16:9")
+     * @param string $titulo         Título del DVD.
+     * @param int    $numero         Número identificador del soporte.
+     * @param float  $precio         Precio del soporte.
+     * @param string $idiomas        Idiomas disponibles.
+     * @param string $formatoPantalla Formato de pantalla.
+     * @param int    $duracion       Duración en minutos (opcional, por defecto 0).
      */
-    public function __construct(string $titulo, int $numero, float $precio, string $idiomas, string $formatoPantalla)
+    public function __construct(string $titulo, int $numero, float $precio, string $idiomas, string $formatoPantalla, int $duracion = 0)
     {
         parent::__construct($titulo, $numero, $precio);
         $this->idiomas = $idiomas;
         $this->formatoPantalla = $formatoPantalla;
+        $this->duracion = $duracion;
     }
 
     /**
-     * Muestra un resumen del DVD incluyendo idiomas y formato de pantalla
+     * Devuelve la duración en minutos.
      *
-     * @return string Resumen del soporte
+     * @return int Duración en minutos.
+     */
+    public function getDuracion(): int
+    {
+        return $this->duracion;
+    }
+
+    /**
+     * Construye y devuelve un resumen textual del DVD.
+     *
+     * - Se apoya en parent::muestraResumen() para la parte común.
+     * - Añade idiomas y formato de pantalla.
+     * - Si la duración es mayor que 0, incluye la duración en minutos en el formato:
+     *   "Título (NN min) - resto_del_resumen".
+     *
+     * @return string Resumen del DVD.
      */
     public function muestraResumen(): string
     {
-        return parent::muestraResumen() . " Idiomas: {$this->idiomas}, Formato: {$this->formatoPantalla}";
+        $base = parent::muestraResumen() . " Idiomas: {$this->idiomas}, Formato: {$this->formatoPantalla}";
+        if ($this->duracion > 0) {
+            $base = sprintf('%s (%d min) - %s', $this->getTitulo(), $this->duracion, substr($base, strlen($this->getTitulo())));
+            // alternativa simple:
+            // $base = parent::muestraResumen() . " ({$this->duracion} min) Idiomas: {$this->idiomas}, Formato: {$this->formatoPantalla}";
+        }
+        return $base;
+    }
+
+    /**
+     * Obtiene la puntuación desde Metacritic si existe una URL configurada.
+     *
+     * - Si no hay URL de Metacritic, devuelve null.
+     * - Si existe, delega en MetacriticScraper::obtenerPuntuacion para recuperar
+     *   la puntuación como float o null si no se puede obtener.
+     *
+     * @return float|null Puntuación o null si no está disponible.
+     */
+    public function getPuntuacion(): ?float
+    {
+        $url = $this->getMetacritic();
+        if ($url === null) return null;
+        return MetacriticScraper::obtenerPuntuacion($url);
     }
 }
-?>

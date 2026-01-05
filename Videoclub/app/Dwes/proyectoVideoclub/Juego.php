@@ -1,71 +1,64 @@
 <?php
 namespace Dwes\ProyectoVideoclub;
+use Dwes\ProyectoVideoclub\Util\MetacriticScraper;
 
 /**
- * Clase Juego
+ * Representa un juego como tipo de Soporte.
  *
- * Representa un soporte de tipo videojuego dentro del sistema del videoclub.
- * Hereda de la clase Soporte y añade propiedades específicas como consola y número de jugadores.
+ * - Contiene información sobre la consola y el rango de jugadores.
+ * - Proporciona métodos para obtener esos datos y para construir resúmenes legibles.
+ * - getPuntuacion() delega en MetacriticScraper si se ha configurado una URL de Metacritic.
  */
 class Juego extends Soporte {
 
-    /** @var string Consola para la que está disponible el juego (ej: PS4, Xbox) */
+    /** Consola para la que está diseñado el juego (por ejemplo "PS5", "Switch") */
     private string $consola;
 
-    /** @var int Número mínimo de jugadores que pueden participar */
+    /** Número mínimo de jugadores */
     private int $minNumJugadores;
 
-    /** @var int Número máximo de jugadores que pueden participar */
+    /** Número máximo de jugadores */
     private int $maxNumJugadores;
 
     /**
-     * Constructor de Juego
+     * Constructor.
      *
-     * @param string $titulo Título del juego
-     * @param int $numero Número identificador del soporte
-     * @param float $precio Precio base del juego
-     * @param string $consola Consola compatible con el juego
-     * @param int $minNumJugadores Número mínimo de jugadores
-     * @param int $maxNumJugadores Número máximo de jugadores
+     * @param string      $titulo            Título del juego.
+     * @param int         $numero            Identificador del soporte.
+     * @param float       $precio            Precio del soporte.
+     * @param string      $consola           Consola objetivo.
+     * @param int         $minNumJugadores   Mínimo de jugadores.
+     * @param int         $maxNumJugadores   Máximo de jugadores.
+     * @param string|null $metacritic        URL opcional de Metacritic para obtener puntuación.
      */
-    public function __construct(string $titulo, int $numero, float $precio, string $consola, int $minNumJugadores, int $maxNumJugadores) {
-        parent::__construct($titulo, $numero, $precio); 
+    public function __construct(string $titulo, int $numero, float $precio, string $consola, int $minNumJugadores, int $maxNumJugadores, ?string $metacritic = null) {
+        parent::__construct($titulo, $numero, $precio, $metacritic);
         $this->consola = $consola;
         $this->minNumJugadores = $minNumJugadores;
         $this->maxNumJugadores = $maxNumJugadores;
     }
 
-    /**
-     * Devuelve la consola compatible con el juego
-     *
-     * @return string
-     */
+    /** Devuelve la consola del juego */
     public function getConsola(): string {
         return $this->consola;
     }
 
-    /**
-     * Devuelve el número mínimo de jugadores
-     *
-     * @return int
-     */
+    /** Devuelve el número mínimo de jugadores */
     public function getMinNumJugadores(): int {
         return $this->minNumJugadores;
     }
 
-    /**
-     * Devuelve el número máximo de jugadores
-     *
-     * @return int
-     */
+    /** Devuelve el número máximo de jugadores */
     public function getMaxNumJugadores(): int {
         return $this->maxNumJugadores;
     }
 
     /**
-     * Devuelve una descripción del rango de jugadores posibles
+     * Devuelve una cadena legible que describe el rango de jugadores.
      *
-     * @return string
+     * - "Para un jugador" si min y max son 1.
+     * - "Para N jugadores" si min == max != 1.
+     * - "De X a Y jugadores" en el resto de casos.
      */
     public function muestraJugadoresPosibles(): string {
         if ($this->minNumJugadores === 1 && $this->maxNumJugadores === 1) {
@@ -78,21 +71,34 @@ class Juego extends Soporte {
     }
 
     /**
-     * Muestra un resumen del juego incluyendo consola y jugadores
+     * Construye un resumen del soporte incluyendo información específica del juego.
      *
-     * @return string
+     * Se apoya en parent::muestraResumen() y añade consola y jugadores.
      */
     public function muestraResumen(): string {
         return parent::muestraResumen() . " Consola: " . $this->consola . " Jugadores: " . $this->muestraJugadoresPosibles();
     }
 
     /**
-     * Representación textual del juego
+     * Representación en cadena del juego.
      *
-     * @return string
+     * Devuelve una línea concisa con consola y rango de jugadores.
      */
     public function __toString(): string {
         return "Consola: " . $this->consola . " Jugadores: " . $this->muestraJugadoresPosibles();
     }
+
+    /**
+     * Obtiene la puntuación desde Metacritic si se proporcionó una URL.
+     *
+     * - Devuelve null si no hay URL de Metacritic.
+     * - Si existe, delega en MetacriticScraper::obtenerPuntuacion.
+     *
+     * @return float|null
+     */
+    public function getPuntuacion(): ?float {
+        $url = $this->getMetacritic();
+        if ($url === null) return null;
+        return MetacriticScraper::obtenerPuntuacion($url);
+    }
 }
-?>

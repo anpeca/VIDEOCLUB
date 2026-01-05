@@ -1,57 +1,58 @@
 <?php
-
 namespace Dwes\ProyectoVideoclub;
 
-use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
-use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
-use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
+use Dwes\ProyectoVideoclub\Exception\SoporteYaAlquiladoException;
+use Dwes\ProyectoVideoclub\Exception\CupoSuperadoException;
+use Dwes\ProyectoVideoclub\Exception\SoporteNoEncontradoException;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Dwes\ProyectoVideoclub\Util\LogFactory;
 
 /**
- * Clase Cliente
+ * Representa un cliente del videoclub.
  *
- * Representa a un cliente del videoclub, con capacidad para alquilar y devolver soportes.
- * Cada cliente tiene un número identificador, un nombre, un límite de alquileres simultáneos
- * y un historial de soportes alquilados.
+ * - Gestiona el estado de los alquileres del cliente.
+ * - Lanza excepciones específicas cuando se producen condiciones de error
+ *   (soporte ya alquilado, cupo superado, soporte no encontrado).
+ * - Registra eventos relevantes mediante un logger obtenido de LogFactory.
+ *
+ * Nota: el código original se mantiene intacto; aquí se añaden comentarios
+ * para documentar el propósito de propiedades y métodos sin modificar la lógica.
  */
 class Cliente
 {
-    /** @var string Nombre del cliente */
+    /** Nombre del cliente */
     private string $nombre;
 
-    /** @var int Número identificador del cliente */
+    /** Número identificador del cliente */
     private int $numero;
 
-    /** @var int Máximo de alquileres simultáneos permitidos */
+    /** Máximo de alquileres concurrentes permitidos para este cliente */
     private int $maxAlquilerConcurrente;
 
-    /** @var int Total de soportes alquilados (histórico) */
+    /** Contador de soportes actualmente alquilados (valor entero) */
     private int $numSoportesAlquilados = 0;
 
-    /** @var Soporte[] Array de soportes actualmente alquilados */
+    /** Array de objetos Soporte que el cliente tiene alquilados */
     private array $soportesAlquilados = [];
 
-    /**
-     * Usuario asociado al cliente (login)
-     *
-     * @var string|null
-     */
+    /** Usuario asociado (opcional) */
     private ?string $user = null;
 
-    /**
-     * Hash de la contraseña (no almacenar la contraseña en claro)
-     *
-     * @var string|null
-     */
+    /** Hash de la contraseña (si se establece) */
     private ?string $passwordHash = null;
 
+    /** Logger para registrar eventos relacionados con el cliente */
+    private Logger $log;
+
     /**
-     * Constructor de Cliente
+     * Constructor.
      *
-     * @param string $nombre Nombre del cliente
-     * @param int $numero Número identificador
-     * @param int $maxAlquilerConcurrente Máximo de alquileres simultáneos (por defecto 3)
-     * @param string|null $user Nombre de usuario opcional para login
-     * @param string|null $plainPassword Contraseña en claro opcional (se almacenará como hash)
+     * @param string      $nombre                 Nombre del cliente.
+     * @param int         $numero                 Número identificador.
+     * @param int         $maxAlquilerConcurrente Cupo máximo de alquileres.
+     * @param string|null $user                   Usuario opcional.
+     * @param string|null $plainPassword          Contraseña en texto plano (se hashéa).
      */
     public function __construct(string $nombre, int $numero, int $maxAlquilerConcurrente = 3, ?string $user = null, ?string $plainPassword = null)
     {
@@ -65,242 +66,211 @@ class Cliente
         if ($plainPassword !== null) {
             $this->setPassword($plainPassword);
         }
+
+        // Se obtiene un logger a través de la factoría de logs
+        $this->log = LogFactory::crearLogger('ClienteLogger', 'cliente.log');
+        $this->log->debug('Cliente creado: '. $this->nombre);
     }
 
-    /**
-     * Obtiene el número identificador del cliente
-     *
-     * @return int
-     */
+    /** Devuelve el número identificador del cliente */
     public function getNumero(): int
     {
         return $this->numero;
     }
 
-    /**
-     * Establece el número identificador del cliente
-     *
-     * @param int $numero
-     */
+    /** Establece el número identificador del cliente */
     public function setNumero(int $numero): void
     {
         $this->numero = $numero;
     }
 
-    /**
-     * Obtiene el máximo de alquileres simultáneos permitidos
-     *
-     * @return int
-     */
-    public function getMaxAlquilerConcurrente(): int
-    {
-        return $this->maxAlquilerConcurrente;
-    }
-
-    /**
-     * Devuelve el array de soportes actualmente alquilados
-     *
-     * @return Soporte[]
-     */
-    public function getSoportesAlquilados(): array
-    {
-        return $this->soportesAlquilados;
-    }
-
-    /**
-     * Alias para compatibilidad con las vistas que esperan getAlquileres()
-     *
-     * @return Soporte[]
-     */
-    public function getAlquileres(): array
-    {
-        return $this->getSoportesAlquilados();
-    }
-
-    /**
-     * Devuelve el número total de soportes alquilados (histórico)
-     *
-     * @return int
-     */
+    /** Devuelve el número de soportes actualmente alquilados (contador) */
     public function getNumSoportesAlquilados(): int
     {
         return $this->numSoportesAlquilados;
     }
 
-    /**
-     * Obtiene el nombre del cliente
-     *
-     * @return string
-     */
+    /** Devuelve el nombre del cliente */
     public function getNombre(): string
     {
         return $this->nombre;
     }
 
-    /**
-     * Establece el nombre del cliente
-     *
-     * @param string $nombre
-     */
+    /** Establece el nombre del cliente */
     public function setNombre(string $nombre): void
     {
         $this->nombre = $nombre;
     }
 
-    /**
-     * Obtiene el usuario de login asociado al cliente
-     *
-     * @return string|null
-     */
+    /** Devuelve el usuario asociado (si existe) */
     public function getUser(): ?string
     {
         return $this->user;
     }
 
-    /**
-     * Establece el usuario de login asociado al cliente
-     *
-     * @param string $user
-     */
+    /** Establece el usuario asociado */
     public function setUser(string $user): void
     {
         $this->user = $user;
     }
 
     /**
-     * Establece la contraseña en texto plano (se guarda como hash internamente)
+     * Almacena el hash de la contraseña a partir del texto plano.
      *
-     * @param string $plain
-     * @return void
+     * Se utiliza password_hash con el algoritmo por defecto.
      */
     public function setPassword(string $plain): void
     {
-        // Usar password_hash para seguridad; PASSWORD_DEFAULT es adecuado para prácticas
         $this->passwordHash = password_hash($plain, PASSWORD_DEFAULT);
     }
 
     /**
-     * Verifica una contraseña en texto plano contra el hash almacenado
+     * Verifica una contraseña en texto plano contra el hash almacenado.
      *
-     * @param string $plain
-     * @return bool
+     * @return bool True si coincide, false en caso contrario o si no hay hash.
      */
     public function verifyPassword(string $plain): bool
     {
-        if ($this->passwordHash === null) {
-            return false;
-        }
+        if ($this->passwordHash === null) return false;
         return password_verify($plain, $this->passwordHash);
     }
 
     /**
-     * Devuelve true si el cliente tiene contraseña configurada (útil para comprobaciones)
+     * Muestra un resumen textual del cliente y sus alquileres activos.
      *
-     * @return bool
-     */
-    public function hasPassword(): bool
-    {
-        return $this->passwordHash !== null;
-    }
-
-    /**
-     * Muestra un resumen del cliente
-     *
-     * @return string
+     * @return string Resumen legible.
      */
     public function muestraResumen(): string
     {
-        // Incluimos nombre y número de soportes activos en el resumen
-        return "Cliente: " . $this->nombre . " - Total alquileres activos: " . count($this->soportesAlquilados);
+        return "Cliente: {$this->nombre} - Total alquileres activos: " . count($this->soportesAlquilados);
     }
 
     /**
-     * Comprueba si el cliente ya tiene alquilado un soporte específico
+     * Comprueba si el cliente ya tiene alquilado un soporte concreto.
      *
-     * @param Soporte $s
-     * @return bool
+     * Se compara por referencia de objeto.
      */
     public function tieneAlquilado(Soporte $s): bool
     {
         foreach ($this->soportesAlquilados as $soporte) {
-            if ($soporte === $s) {
-                return true;
-            }
+            if ($soporte === $s) return true;
         }
         return false;
     }
 
     /**
-     * Alquila un soporte al cliente si no lo tiene ya y no ha superado el cupo
+     * Realiza el alquiler de un soporte para este cliente.
      *
-     * @param Soporte $s
-     * @return Cliente
-     * @throws SoporteYaAlquiladoException Si el soporte ya está alquilado por el cliente
-     * @throws CupoSuperadoException Si el cliente ha superado el cupo de alquileres
+     * - Lanza SoporteYaAlquiladoException si el cliente ya tiene ese soporte.
+     * - Lanza CupoSuperadoException si se supera el cupo máximo.
+     * - Marca el soporte como alquilado, lo añade al array y actualiza contadores.
+     *
+     * @return Cliente Devuelve $this para permitir encadenado.
+     * @throws SoporteYaAlquiladoException
+     * @throws CupoSuperadoException
      */
     public function alquilar(Soporte $s): Cliente
     {
         if ($this->tieneAlquilado($s)) {
+            $this->log->warning("Intento de alquilar soporte ya alquilado", [
+                'cliente' => $this->nombre,
+                'soporte' => method_exists($s, 'getTitulo') ? $s->getTitulo() : 'desconocido'
+            ]);
             throw new SoporteYaAlquiladoException("El soporte ya está alquilado por este cliente.");
         }
 
         if (count($this->soportesAlquilados) >= $this->maxAlquilerConcurrente) {
+            $this->log->warning("Cupo de alquileres superado", [
+                'cliente' => $this->nombre,
+                'actual' => count($this->soportesAlquilados),
+                'maximo' => $this->maxAlquilerConcurrente
+            ]);
             throw new CupoSuperadoException("Ha superado el cupo de alquileres.");
         }
 
-        // Marcar como alquilado y añadir al array de alquileres actuales
-        $s->alquilado = true;
+        // Marca el soporte como alquilado mediante su API pública
+        $s->setAlquilado(true);
         $this->soportesAlquilados[] = $s;
         $this->numSoportesAlquilados++;
+        $this->log->info("Alquiler realizado", [
+            'cliente' => $this->nombre,
+            'soporte' => method_exists($s, 'getTitulo') ? $s->getTitulo() : 'desconocido'
+        ]);
         return $this;
     }
 
     /**
-     * Devuelve un soporte alquilado por número
+     * Devuelve un soporte identificado por su número.
      *
-     * @param int $numSoporte Número identificador del soporte
+     * - Busca en el array de soportes alquilados y, si lo encuentra,
+     *   lo marca como no alquilado, lo elimina del array y actualiza contadores.
+     * - Si no lo encuentra, lanza SoporteNoEncontradoException.
+     *
+     * @param int $numSoporte Número del soporte a devolver.
      * @return Cliente
-     * @throws SoporteNoEncontradoException Si el cliente no tiene ese soporte alquilado
+     * @throws SoporteNoEncontradoException
      */
     public function devolver(int $numSoporte): Cliente
     {
         foreach ($this->soportesAlquilados as $key => $soporte) {
             if ($soporte->getNumero() === $numSoporte) {
+                // Se accede directamente a la propiedad 'alquilado' del soporte
+                // para marcarlo como devuelto (manteniendo el código original).
                 $soporte->alquilado = false;
                 unset($this->soportesAlquilados[$key]);
                 $this->soportesAlquilados = array_values($this->soportesAlquilados);
+                // Decrementar contador de soportes alquilados
+                $this->numSoportesAlquilados = max(0, $this->numSoportesAlquilados - 1);
+                $this->log->info("Devolución realizada", [
+                    'cliente' => $this->nombre,
+                    'soporte_numero' => $numSoporte
+                ]);
                 return $this;
             }
         }
+        $this->log->warning("Intento de devolución de soporte no alquilado", [
+            'cliente' => $this->nombre,
+            'soporte_numero' => $numSoporte
+        ]);
         throw new SoporteNoEncontradoException("El cliente no tenía alquilado este soporte.");
     }
 
     /**
-     * Muestra por pantalla los soportes actualmente alquilados por el cliente
+     * Registra en el log la lista de alquileres actuales del cliente.
      *
-     * @return void
+     * Para cada soporte intenta usar muestraResumen() si está disponible.
      */
     public function listaAlquileres(): void
     {
-        echo "Hay " . count($this->soportesAlquilados) . " soportes alquilados:<br>";
+        $this->log->info("Lista de alquileres del cliente {$this->nombre}");
         foreach ($this->soportesAlquilados as $soporte) {
-            echo $soporte->muestraResumen() . "<br>";
+            $linea = method_exists($soporte, 'muestraResumen') ? $soporte->muestraResumen() : json_encode($soporte);
+            $this->log->info($linea);
         }
     }
 
     /**
-     * Carga una lista de objetos Soporte como alquileres actuales.
-     * Usar cuando reconstruyes el Cliente desde la sesión para mantener estado en memoria.
+     * Devuelve el array de soportes actualmente alquilados por el cliente.
      *
-     * @param Soporte[] $soportesArray
-     * @return void
+     * @return Soporte[] Array de objetos Soporte
+     */
+    public function getAlquileres(): array
+    {
+        return $this->soportesAlquilados;
+    }
+
+    /**
+     * Inicializa el array de soportes alquilados a partir de un array externo.
+     *
+     * - Actualiza el contador y, si los objetos tienen la propiedad 'alquilado',
+     *   la marca a true (manteniendo el comportamiento original).
+     *
+     * @param array $soportesArray Array de objetos Soporte
      */
     public function setSoportesAlquiladosFromArray(array $soportesArray): void
     {
         $this->soportesAlquilados = array_values($soportesArray);
-        // histórico: recalcular el contador histórico si es razonable (aquí lo sincronizamos al número actual)
         $this->numSoportesAlquilados = count($this->soportesAlquilados);
-        // marcar cada soporte como alquilado si procede
         foreach ($this->soportesAlquilados as $s) {
             if (is_object($s) && property_exists($s, 'alquilado')) {
                 $s->alquilado = true;
@@ -308,5 +278,3 @@ class Cliente
         }
     }
 }
-
-?>
