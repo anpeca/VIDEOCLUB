@@ -1,0 +1,10 @@
+{
+    "require": {
+        "monolog/monolog": "^2.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dwes\\ProyectoVideoclub\\": "app/Dwes/proyectoVideoclub/"
+        }
+    }
+}

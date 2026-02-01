@@ -1,0 +1,11 @@
+{
+  "name": "antonio/monolog",
+  "autoload": {
+    "psr-4": {
+      "Dwes\\Monologos\\": "src/"
+    }
+  },
+  "require": {
+    "monolog/monolog": "^3.0"
+  }
+}
